@@ -1,0 +1,64 @@
+#
+# Environment variables for launchd.
+# Ref: https://support.apple.com/en-gb/guide/terminal/apdc6c1077b-5d5d-4d35-9c19-60f2397b2369/mac
+#
+
+launch() {
+  COMMAND="${1}"
+  PLIST_FILE="${2}"
+  DIR_AGENTS="${HOME}/Library/LaunchAgents"
+
+  # Show `help` message.
+  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    <<EOF
+Usage: launch subcommand [arguments ...]
+System wide and per-user daemon/agent manager
+
+  -d, --dir       per-user agents provided by the user
+  -l, --list      list all of the jobs loaded into launchd
+
+  -L, --load      load the specified configuration file
+  -R, --reload    force the unloading and loading of the plist
+  -S, --start     start the specified job by label
+
+  -u, --unload    unload the specified job by label
+  -r, --remove    remove the job from launchd by label
+  -s, --stop      stop the specified job by label
+
+  -h, --help      display this help and exit
+
+Full documentation locally via: 'man launchd' or 'man launchctl'
+EOF
+    return 0
+  fi
+
+  # Launchd Services
+  if [[ "$COMMAND" == "-d" || "$COMMAND" == "--dir" ]]; then
+     cd "${DIR_AGENTS}"
+  elif [[ "$COMMAND" == "-l" || "$COMMAND" == "--list" ]]; then
+    launchctl list
+  elif [[ "$COMMAND" == "-R" || "$COMMAND" == "--reload" && -n "$PLIST_FILE" ]]; then
+    cd "${DIR_AGENTS}" && echo "reloading ${PLIST_FILE}"
+    launchctl unload ${PLIST_FILE} && launchctl load ${PLIST_FILE} && \
+    popd > /dev/null 2>&1
+  elif [[ "$COMMAND" == "-L" || "$COMMAND" == "--load" && -n "$PLIST_FILE" ]]; then
+    cd "${DIR_AGENTS}" && echo "loading ${PLIST_FILE}"
+    launchctl load ${PLIST_FILE} && popd > /dev/null 2>&1
+  elif [[ "$COMMAND" == "-u" || "$COMMAND" == "--unload" && -n "$PLIST_FILE" ]]; then
+    cd "${DIR_AGENTS}" && echo "unloading ${PLIST_FILE}"
+    launchctl unload ${PLIST_FILE} && popd > /dev/null 2>&1
+  elif [[ "$COMMAND" == "-S" || "$COMMAND" == "--start" && -n "$PLIST_FILE" ]]; then
+    cd "${DIR_AGENTS}" && echo "starting ${PLIST_FILE}"
+    launchctl start ${PLIST_FILE} && popd > /dev/null 2>&1
+  elif [[ "$COMMAND" == "-s" || "$COMMAND" == "--stop" && -n "$PLIST_FILE" ]]; then
+    cd "${DIR_AGENTS}" && echo "stopping ${PLIST_FILE}"
+    launchctl stop ${PLIST_FILE} && popd > /dev/null 2>&1
+  elif [[ "$COMMAND" == "-r" || "$COMMAND" == "--remove" && -n "$PLIST_FILE" ]]; then
+    cd "${DIR_AGENTS}" && echo "removing ${PLIST_FILE}"
+    launchctl remove ${PLIST_FILE} && popd > /dev/null 2>&1
+  else
+    echo "launch: command not found or plist file is not defined"
+  fi
+}
+
+unset launch

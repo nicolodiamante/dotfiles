@@ -1,0 +1,47 @@
+#
+# Network and Services.
+
+# Curl
+# Use the XDG_CONFIG_HOME environment variable if set (Added in 7.73.0).
+# Ref: https://github.com/curl/curl/issues/5829
+export CURL_HOME=${XDG_CONFIG_HOME:-$HOME/.config}/curl
+
+# Git & SSH
+# Ref: https://git-scm.com/docs/git-config
+export GIT_SSH_COMMAND="ssh ${SSH_CONFIG} "$@" 2>/dev/null"
+export SSH_CONFIG="-F ${XDG_CONFIG_HOME:-$HOME/.config}/ssh/config"
+
+#
+# Aliases
+#
+
+alias ssh="ssh ${SSH_CONFIG}"
+alias mosh="mosh --ssh=\"ssh $"{SSH_CONFIG}"\""
+alias scp="scp ${SSH_CONFIG}"
+alias sftp="sftp ${SSH_CONFIG}"
+alias sshfs="__sshfs_then_blacklist_mounts ${SSH_CONFIG}"
+
+# Find DNS records
+alias finddns='nslookup'
+
+# Flush DNS Cache
+alias flusdns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder && echo 'cache flushed!'"
+
+# Show private IP address
+alias localip='ipconfig getifaddr en0'
+
+# Show public IP address
+alias publicip='dig +short myip.opendns.com @resolver1.opendns.com'
+
+# Find hardware network interface subnet prefix
+# (example below is for Wi-Fi interface)
+alias netinfo='networksetup -getinfo "Wi-Fi"'
+
+# List hardware network interfaces
+alias netsetup='networksetup -listallhardwareports'
+
+# Run DNS leak test
+alias dnsleak='nslookup whoami.akamai.net'
+
+# Check internet speed
+alias speedtest='curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -'

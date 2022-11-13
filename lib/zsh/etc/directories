@@ -1,0 +1,79 @@
+#
+# Directories.
+#
+
+# Move up levels.
+alias -g ...='../..'
+alias -g ....='../../..'
+alias -g .....='../../../..'
+alias -g ......='../../../../..'
+
+# Move up to the parent directory.
+alias -- -='cd -'
+alias 1='cd -'
+alias 2='cd -2'
+alias 3='cd -3'
+alias 4='cd -4'
+alias 5='cd -5'
+alias 6='cd -6'
+alias 7='cd -7'
+alias 8='cd -8'
+alias 9='cd -9'
+
+# Directories shortcuts.
+alias dl="${HOME}/Downloads"
+alias doc="${HOME}/Documents"
+alias dt="${HOME}/Desktop"
+
+# iCloud Drive (from OS X 10.12 Sierra or later).
+OS_VERS="$(sw_vers -buildVersion)"
+if [[ "$OS_VERS" > 16 ]]; then
+  alias icloud='${CLOUD_DOCS}'
+fi
+
+# Dropbox
+if [[ -d "$HOME/Dropbox" ]]; then
+  alias dropbox="${HOME}/Dropbox"
+fi
+
+# Prompt before overwrite.
+alias cp='cp -i'
+alias mv='mv -i'
+alias rm='rm -i'
+
+# Remove directory.
+alias rmd='rmdir'
+
+#
+# List directories
+#
+
+# List only directories.
+alias ll="ls -lFd *(-/N) --time-style="\${TIME_STYLE}""
+
+# List all files, directories first
+alias la="ls -aFh --group-directories-first"
+
+# List only directories and symbolic links that point to directories
+alias lsd="ls -ld *(-/DN) --group-directories-first --time-style="\${TIME_STYLE}""
+
+# List only file beginning with `.`
+alias lsa="ls -ld .* --group-directories-first --time-style="\${TIME_STYLE}""
+
+# List files base on last modified time
+alias lm="ls -hlt --time-style="\${TIME_STYLE}""
+
+#
+# Configurations
+#
+
+# If a command is issued that can't be executed as a normal command,
+# and the command is the name of a directory, perform the `cd` command
+# to that directory.
+setopt AUTO_CD
+
+# Make cd push the old directory onto the directory stack.
+setopt AUTO_PUSHD
+
+# Don't push multiple copies of the same directory onto the directory stack.
+setopt PUSHD_IGNORE_DUPS

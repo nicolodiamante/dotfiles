@@ -1,0 +1,35 @@
+#
+# Homebrew.
+#
+
+# Load Homebrew env if available.
+(( $+commands[brew] )) || return
+
+# Opt out to Homebrew analytics.
+# Ref: https://docs.brew.sh/analytics
+export HOMEBREW_NO_ANALYTICS=1
+
+#
+# Aliases
+#
+
+# brew.
+alias b="brew"
+
+# Installs Homebrew Cask.
+alias bcask="brew install --cask"
+
+# Install Homebrew package.
+alias bi="brew install"
+
+# List of all packages installed.
+alias bl='brew list -1'
+
+# Update all Homebrew packages installed.
+alias bu='brew update'
+
+# Upgrade Homebrew then remove all old and outdated packages.
+alias bup='brew upgrade && brew cleanup'
+
+# Upgrade Homebrew formula.
+alias buf='brew upgrade --formula'

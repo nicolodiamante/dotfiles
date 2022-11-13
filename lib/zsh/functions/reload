@@ -1,0 +1,8 @@
+#
+# System-wide function.
+#
+
+# Reload the shell (i.e. invoke as a login shell).
+reload() {
+  source "${ZDOTDIR}/.zshrc"
+}

@@ -1,0 +1,9 @@
+#
+# System-wide logout file for zsh(1) login shells.
+#
+
+# Remove the `temp` directory associated with the current process upon logout.
+[[ -d "$XDG_RUNTIME_DIR" ]] && rm -rf "${XDG_RUNTIME_DIR}"
+
+# When leaving the console clear the screen to increase privacy and exit.
+clear && printf '\e[3J' && exit

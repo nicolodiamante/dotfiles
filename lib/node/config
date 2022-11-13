@@ -1,0 +1,29 @@
+#
+# Environment variables for Node.js.
+#
+
+# Load Node.js if available.
+(( $+commands[node] )) || return
+
+# May be either 'sloppy' or 'strict'
+# Default: 'sloppy', which will allow non-strict mode code to be run.
+export NODE_REPL_MODE='sloppy'
+
+# REPLs with the repl module.
+# See: https://nodejs.org/en/knowledge/REPL/how-to-create-a-custom-repl/
+export NODE_REPL_START="${DOTFILES_ROOT}/lib/node/lib/repl.js"
+
+# Save persistent history to a specified file rather than .node_repl_history.
+# Set value to '' will disable persistent REPL history.
+# References: https://nodejs.org/api/repl.html
+export NODE_REPL_HISTORY="${XDG_STATE_HOME:-$HOME/.local/state}/node/node_history"
+
+# Controls how many lines of history will be persisted if history is available.
+export NODE_REPL_HISTORY_SIZE=10000
+
+#
+# Aliases
+#
+
+# Start Node REPL.
+alias node='node "${NODE_REPL_START}"'

@@ -1,0 +1,19 @@
+#
+# Do not commit…
+#
+
+*.swp
+.DS_Store
+assets/
+lib/launchd/launchpad/
+lib/mackup/settings/
+lib/ssh/*
+user/*
+utils/opt/apple/*
+
+#
+# …except for these files
+#
+
+!lib/ssh/config
+!utils/opt/apple/fonts

@@ -1,0 +1,13 @@
+#
+# System-wide corrections for interactive zsh(1) login shells.
+#
+
+# Prevent shell to correct determinate words.
+alias cd='nocorrect cd'
+alias cp='nocorrect cp'
+alias grep='nocorrect grep'
+alias mkdir='nocorrect mkdir'
+alias man='nocorrect man'
+alias mv='nocorrect mv'
+alias rm='nocorrect rm'
+alias sudo='nocorrect sudo'

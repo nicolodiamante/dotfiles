@@ -1,0 +1,15 @@
+#
+# System-wide function.
+#
+
+# Hide/show all desktop icons (useful when presenting).
+desktop() {
+  if [[ "$#" -eq 0 ]]; then
+    echo 'desktop: no option specified!'
+    return 0
+  elif [[ -n "$1" && "$1" == "-h" || "$1" == "--hide" ]]; then
+    defaults write com.apple.finder CreateDesktop -bool false && killall Finder
+  elif [[ -n "$1" && "$1" == "-s" || "$1" == "--show" ]]; then
+    defaults write com.apple.finder CreateDesktop -bool true && killall Finder
+  fi
+}
