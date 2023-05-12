@@ -1,0 +1,12 @@
+#
+# Environment variables for Visual Studio Code.
+#
+
+# Load variables if Code is available.
+(( $+commands[code] )) || return
+
+# Portable Mode.
+#export VSCODE_PORTABLE="${$XDG_DATA_HOME}/vscode"
+
+# Prevents Visual Studio Code from storing extensions in the home directory.
+#export VSCODE_EXTENSIONS="${XDG_CACHE_HOME}/Code/extensions"

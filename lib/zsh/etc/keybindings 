@@ -1,0 +1,86 @@
+#
+# System-wide keybindings for interactive zsh(1) login shells.
+# See: http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#index-bindkey
+#
+
+# Use the default Emacs mode/keymap. This also links the `emacs` keymap
+# to `main` so that it is selected by default next time the editor starts.
+bindkey -e
+
+# Create and populate a zkbd compatible hash with terminfo(5) mappings.
+# xterm-compatible terminals can use extended key-definitions from user_caps(5).
+# Those are combinations of:
+# Left          => U+2190
+# Right         => U+2192
+# Up            => U+2191
+# Down          => U+2193
+# Tab           => U+21B9
+# Shift         => U+21E7
+# Home          => U+21F1
+# End           => U+21F2
+# Command       => U+2318
+# Option        => U+2325
+# Backspace     => U+232B
+# Alt           => U+2387
+# Ctrl/Control
+# Del
+# Meta
+# Page Up
+# Page Down
+typeset -g -A key
+
+key[Home]="${terminfo[khome]}"
+key[End]="${terminfo[kend]}"
+key[Insert]="${terminfo[kich1]}"
+key[Backspace]="${terminfo[kbs]}"
+key[Delete]="${terminfo[kdch1]}"
+key[Up]="${terminfo[kcuu1]}"
+key[Down]="${terminfo[kcud1]}"
+key[Left]="${terminfo[kcub1]}"
+key[Right]="${terminfo[kcuf1]}"
+key[PageUp]="${terminfo[kpp]}"
+key[PageDown]="${terminfo[knp]}"
+key[Shift-Tab]="${terminfo[kcbt]}"
+
+# Setup key accordingly
+[[ -n "${key[Home]}"      ]] && bindkey -- "${key[Home]}"      beginning-of-line
+[[ -n "${key[End]}"       ]] && bindkey -- "${key[End]}"       end-of-line
+[[ -n "${key[Insert]}"    ]] && bindkey -- "${key[Insert]}"    overwrite-mode
+[[ -n "${key[Backspace]}" ]] && bindkey -- "${key[Backspace]}" backward-delete-char
+[[ -n "${key[Delete]}"    ]] && bindkey -- "${key[Delete]}"    delete-char
+[[ -n "${key[Up]}"        ]] && bindkey -- "${key[Up]}"        up-line-or-history
+[[ -n "${key[Down]}"      ]] && bindkey -- "${key[Down]}"      down-line-or-history
+[[ -n "${key[Left]}"      ]] && bindkey -- "${key[Left]}"      backward-char
+[[ -n "${key[Right]}"     ]] && bindkey -- "${key[Right]}"     forward-char
+[[ -n "${key[PageUp]}"    ]] && bindkey -- "${key[PageUp]}"    beginning-of-buffer-or-history
+[[ -n "${key[PageDown]}"  ]] && bindkey -- "${key[PageDown]}"  end-of-buffer-or-history
+[[ -n "${key[Shift-Tab]}" ]] && bindkey -- "${key[Shift-Tab]}" reverse-menu-complete
+
+# Finnaly, make sure the terminal is in application mode when the ZSH line
+# editor zle is active otherwise values from `$terminfo` are not valid.
+if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
+  autoload -Uz add-zle-hook-widget
+  function zle_application_mode_start { echoti smkx }
+  function zle_application_mode_stop { echoti rmkx }
+  add-zle-hook-widget -Uz zle-line-init zle_application_mode_start
+  add-zle-hook-widget -Uz zle-line-finish zle_application_mode_stop
+fi
+
+# Remove the slash, period, angle brackets and dash characters from the
+# default list. This allows to move backward and forward between words include
+# these characters or when trying to only delete until the next character,
+# e.g. for paths or dash-separated words.
+WORDCHARS='~!#$%^&*(){}[]<>?.+;-'
+MOTION_WORDCHARS='~!#$%^&*(){}[]<>?.+;-/'
+
+''{back,for}ward-word() WORDCHARS=$MOTION_WORDCHARS zle .$WIDGET
+zle -N backward-word
+zle -N forward-word
+
+# Enable history search
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+[[ -n "${key[Up]}"   ]] && bindkey -- "${key[Up]}"   up-line-or-beginning-search
+[[ -n "${key[Down]}" ]] && bindkey -- "${key[Down]}" down-line-or-beginning-search

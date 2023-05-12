@@ -1,0 +1,50 @@
+#
+# System-wide profile for interactive zsh(1) login shells.
+# Setup user specific overrides for this in ~/.zshrc. See zshbuiltins(1)
+# and zshoptions(1) for more details.
+# 1. http://zsh.sourceforge.net/Doc/Release/Expansion.html#Filename-Generation
+# 2. http://zsh.sourceforge.net/Doc/Release/Conditional-Expressions.html
+# 3. http://zsh.sourceforge.net/Doc/Release/Roadmap.html#Pattern-Matching
+# 4 .http://zsh.sourceforge.net/Doc/Release/Expansion.html#Glob-Qualifiers
+# 5. https://unix.stackexchange.com/questions/480766/zsh-source-scripts-recursively
+#
+
+# systemd
+CLOUD_DOCS=$HOME/Library/Mobile\ Documents/com\~apple\~CloudDocs
+INIT=${CLOUD_DOCS:-$HOME}/dotfiles/lib/systemd/init
+[[ -r $INIT ]] && source ${INIT}
+
+# Loads all non-hidden regular startup files that zsh will read
+# commands from in collation order.
+# See: https://bit.ly/3ceeB6F
+# Seee: https://zsh.sourceforge.io/Doc/Release/Expansion.html#Glob-Qualifiers
+for startup_files ($LIB_DIR/zsh/etc/*(N.)); do
+  [[ -r "$startup_files" ]] && source "${startup_files}"
+done
+
+# As you add more functions, it becomes cumbersome to append each
+# of them to the end, so automatically loads all the files into
+# the functions folder.
+if [[ -d "$LIB_DIR/zsh/functions" ]]; then
+  fpath=(${LIB_DIR}/zsh/functions "${fpath[@]}")
+  autoload -Uz $fpath[1]/*(N.:t)
+fi
+
+# Load all the user configurations.
+# Iterate over all the files in the current directory
+# and its (grand-)*children except *.scpt.
+for usr_files ($USER_DIR/**/^*.scpt(N.||@:t)); do
+  [[ -r "$usr_files" ]] && source "${usr_files}"
+done
+
+# Load each configuration files.
+for config_files in $LIB_DIR/^(git|ssh)/config; do
+  [[ -r "$config_files" ]] && source "${config_files}"
+done
+
+unset startup_files usr_files config_files
+
+# Enable zsh-autosuggestions (keep the following at the end).
+if [[ -r /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
+  source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi

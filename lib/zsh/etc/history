@@ -1,0 +1,98 @@
+#
+# System-wide history for interactive zsh(1) login shells.
+#
+
+# Set history file.
+export HISTFILE="${XDG_STATE_HOME}/zsh/zhistory"
+
+# Timestamp format.
+case ${HIST_STAMPS-} in
+  *)
+    alias history="hist_list -t '$HIST_STAMPS'"
+    alias hist="hist_fn"
+    ;;
+esac
+HIST_STAMPS="$HIST_TIME_STYLE"
+
+# Show all history events (starting from 1) unless a number is provided.
+hist_list() {
+  [[ ${@[-1]-} = *[0-9]* ]] && builtin fc -l "$@" || builtin fc -l "$@" 1
+}
+
+# History
+hist_fn() {
+  COMMAND="${1}"
+  NODE_HIST="${NODE_REPL_HISTORY}"
+  ZSH_HIST="${HISTFILE}"
+
+  # Cleans history from all terminal sessions.
+  if [[ "$1" == "-c" || "$1" == "--clear" ]]; then
+    if [[ "$2" == "-n" || "$2" == "--node" ]]; then
+      if [[ -s "$NODE_HIST" ]] ; then
+        cat /dev/null > "${NODE_HIST}" &&
+        echo 'node: history: cleared!'
+      else
+        echo 'node: history: empty!'
+      fi
+    elif [[ "$2" == "-a" || "$2" == "--all" ]]; then
+      if [[ -s "$ZSH_HIST" || -s "$NODE_HIST" ]]; then
+        cat /dev/null > "${ZSH_HIST}" &&
+        cat /dev/null > "${NODE_HIST}" &&
+        echo 'zsh: history: all cleared!'
+      else
+        echo 'zsh: history: all empty!'
+      fi
+    elif [[ "$2" -eq 0 ]]; then
+      if [[ -s "$ZSH_HIST" ]]; then
+        cat /dev/null > "${ZSH_HIST}"
+        echo 'zsh: history: cleared!'
+      else
+        echo 'zsh: history: empty!'
+      fi
+    fi
+  elif [[ "$1" -eq 0 ]]; then
+    # Show all history events
+    eval history
+  fi
+}
+
+# Set the number of commands to remember in the zsh history.
+[[ "$HISTSIZE" -lt 50000 ]] && HISTSIZE=50000
+[[ "$SAVEHIST" -lt 10000 ]] && SAVEHIST=10000
+
+# Set the maximum number of lines contained in the zsh history.
+SAVEHIST=${HISTSIZE}
+
+# Ignore specific commands that should never be logged in the history file.
+HISTORY_IGNORE="(bye|cd|clear|d|df|dl|doc|dropbox|dt|exit|hist|history|icloud|l|la|ll|lm|ls|lsd|pwd|su|t|v)"
+
+#
+# History Configuration.
+#
+
+# Record timestamp of command in HISTFILE.
+setopt EXTENDED_HISTORY
+
+# Delete duplicates first when HISTFILE size exceeds HISTSIZE.
+setopt HIST_EXPIRE_DUPS_FIRST
+
+# Ignore duplicated commands history list.
+setopt HIST_IGNORE_DUPS
+
+# Ignore duplicates when searching.
+setopt HIST_FIND_NO_DUPS
+
+# Ignore commands that start with space.
+setopt HIST_IGNORE_SPACE
+
+# Remove superfluous blanks from commands added to history.
+setopt HIST_REDUCE_BLANKS
+
+# Show command with history expansion to user before running it.
+setopt HIST_VERIFY
+
+# Add commands to HISTFILE in order of execution.
+setopt INC_APPEND_HISTORY
+
+# Share history in multiple zsh shell.
+setopt SHARE_HISTORY

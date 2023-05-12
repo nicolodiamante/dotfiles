@@ -1,0 +1,19 @@
+#
+# Ignore
+#
+
+*.swp
+.DS_Store
+lib/launchd/cleanup/
+lib/launchd/launchpad/
+lib/mackup/settings/
+lib/ssh/*
+user/*
+utils/opt/apple/*
+
+#
+# Except for these files
+#
+
+!lib/ssh/config
+!utils/opt/apple/fonts

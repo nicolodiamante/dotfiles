@@ -1,0 +1,19 @@
+#
+# MANPATH
+#
+
+man_dirs=(
+  /usr/share/man
+  /usr/local/share/man
+)
+
+# MANPATH directories.
+for man in ${man_dirs}; do
+  if [[ -d ${man} && -z ${path[(r)$man]} ]]; then
+    manpath=($man_dirs)
+  fi
+done
+
+unset man_dirs
+
+export MANPATH

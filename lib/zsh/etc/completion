@@ -1,0 +1,180 @@
+#
+# System-wide completion for interactive zsh(1) login shells.
+# Ref: https://gist.github.com/anatooly/316404b172cd4228982223c3f63d55c5
+#
+
+# Automatically use menu completion after the second consecutive
+# request for completion, for example by pressing the tab key repeatedly.
+# This option is overridden by MENU_COMPLETE.
+setopt AUTO_MENU
+
+# The cursor is moved to the end of the word if either a single match
+# is inserted or menu completion is performed.
+setopt ALWAYS_TO_END
+
+# If unset, the cursor is moved to the end of the word if completion is started.
+# Otherwise it stays where it is and completion is done from both ends.
+setopt COMPLETE_IN_WORD
+
+# On an ambiguous completion, instead of listing possibilities or beeping,
+# insert the first match immediately. Then when completion is requested
+# again, remove the first match and insert the second match, etc. When there
+# are no more matches, go back to the first one again.
+# This option overrides AUTO_MENU
+unsetopt MENU_COMPLETE
+
+# Shell Completion
+# Ref: https://docs.brew.sh/Shell-Completion
+if type brew &>/dev/null; then
+  fpath=(/usr/local/share/zsh/site-functions $fpath)
+fi
+
+# Load and initialize the completion system.
+autoload -Uz compinit && compinit -d ${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${HOST}-${ZSH_VERSION}
+
+# Use caching to make completion for cammands such as dpkg and apt usable.
+zstyle ':completion::complete:*' use-cache on
+zstyle ':completion::complete:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompcache"
+
+# Typically, compinit will not automatically find new executables in the $PATH.
+# For example, after you install a new package, the files in /usr/bin/ would
+# not be immediately or automatically included in the completion. Thus, to have
+# these new executables included, one would run rehash' that can be set to
+# happen automatically. See: https://wiki.archlinux.org/index.php/Zsh
+zstyle ':completion:*' rehash true
+
+# Case insensitive tries first to complete the current word exactly as its
+# written, before trying case-insensitive or other matches
+zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# Group matches and describe.
+zstyle ':completion:*:*:*:*:*' menu select
+zstyle ':completion:*:matches' group 'yes'
+zstyle ':completion:*:options' description 'yes'
+zstyle ':completion:*:options' auto-description '%d'
+zstyle ':completion:*:descriptions' format '%F{green}›%f %B%d:%b'
+zstyle ':completion:*:default' list-prompt '%S%M matches%s'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' verbose yes
+
+# Fuzzy match mistyped completions.
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*:match:*' original only
+zstyle ':completion:*:approximate:*' max-errors 1 numeric
+
+# Increase the number of errors based on the length of the typed word.
+zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3))numeric)'
+
+# Don't complete unavailable commands.
+zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
+
+# Array completion element sorting.
+zstyle ':completion:*:*:-subscript-:*' tag-order indexes parameters
+
+# Partial completion suggestions
+zstyle ':completion:*' list-suffixes
+zstyle ':completion:*' expand prefix suffix
+
+# Complete . and .. special directories
+zstyle ':completion:*' special-dirs true
+
+# Enable autocompletion of privileged environments in privileged commands
+# (e.g. if you complete a command starting with sudo, completion scripts will
+# also try to determine your completions with sudo).
+zstyle ':completion::complete:*' gain-privileges 1
+
+# Directories
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-directories
+zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
+zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'users' 'expand'
+zstyle ':completion:*' squeeze-slashes true
+
+# History
+zstyle ':completion:*:history-words' stop yes
+zstyle ':completion:*:history-words' remove-all-dups yes
+zstyle ':completion:*:history-words' list false
+zstyle ':completion:*:history-words' menu yes
+
+# Environmental Variables
+zstyle ':completion::*:(-command-|export):*' fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-}
+
+# Populate hostname completion.
+zstyle -e ':completion:*:hosts' hosts 'reply=(
+  ${=${=${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) 2>/dev/null)"}%%[#| ]*}//\]:[0-9]*/ }//,/ }//\[/ }
+  ${=${(f)"$(cat /etc/hosts(|)(N) <<(ypcat hosts 2>/dev/null))"}%%\#*}
+  ${=${${${${(@M)${(f)"$(cat ~/.ssh/config 2>/dev/null)"}:#Host *}#Host }:#*\**}:#*\?*}}
+)'
+
+# Ignore multiple entries.
+zstyle ':completion:*:(rm|kill|diff):*' ignore-line other
+zstyle ':completion:*:rm:*' file-patterns '*:all-files'
+
+# Kill
+zstyle ':completion:*:*:*:*:processes' command 'ps -u $USER -o pid,user,comm -w'
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:*:kill:*' force-list always
+zstyle ':completion:*:*:kill:*' insert-ids single
+
+# Man
+zstyle ':completion:*:manuals' separate-sections true
+zstyle ':completion:*:manuals.(^1*)' insert-sections true
+
+# SSH/SCP/RSYNC
+zstyle ':completion:*:(scp|rsync):*' tag-order 'hosts:-host:host hosts:-domain:domain hosts:-ipaddr:ip\ address *'
+zstyle ':completion:*:(scp|rsync):*' group-order users files all-files hosts-domain hosts-host hosts-ipaddr
+zstyle ':completion:*:ssh:*' tag-order 'hosts:-host:host hosts:-domain:domain hosts:-ipaddr:ip\ address *'
+zstyle ':completion:*:ssh:*' group-order users hosts-domain hosts-host users hosts-ipaddr
+zstyle ':completion:*:(ssh|scp|rsync):*:hosts-host' ignored-patterns '*(.|:)*' loopback ip6-loopback localhost ip6-localhost broadcasthost
+zstyle ':completion:*:(ssh|scp|rsync):*:hosts-domain' ignored-patterns '<->.<->.<->.<->' '^[-[:alnum:]]##(.[-[:alnum:]]##)##' '*@*'
+zstyle ':completion:*:(ssh|scp|rsync):*:hosts-ipaddr' ignored-patterns '^(<->.<->.<->.<->|(|::)([[:xdigit:].]##:(#c,2))##(|%*))' '127.0.0.<->' '255.255.255.255' '::1' 'fe80::*'
+
+# Spell check and auto correction of commands
+SPROMPT="Correct %R to %B%r%b? (Yes|No|Abort|Edit) "
+
+# Autosuggestion
+# See: https://github.com/zsh-users/zsh-autosuggestions
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+ZSH_AUTOSUGGEST_STRATEGY=match_prev_cmd
+
+#
+# Input/Output
+#
+
+# Using the correct_all option try to correct the spelling of all arguments in
+# a line and is too distracting, also needs a lot of nocorrect aliases to work
+# around. Using only "correct" to correct the command itself is more friendly.
+setopt CORRECT
+
+# Allow comments even in interactive shells.
+setopt INTERACTIVE_COMMENTS
+
+# If this option is unset, output flow control via start/stop characters
+# (usually assigned to ^S/^Q) is disabled in the shell's editor.
+unsetopt FLOW_CONTROL
+
+#
+# Expansion and Globbing
+#
+
+# Treat the `#`, `~` and `^` characters as part of patterns for filename
+# generation. An initial unquoted `~` always produces named directory expansion.
+setopt EXTENDED_GLOB
+
+# Disable printing of errors if a pattern for filename generation has no matches.
+setopt NOMATCH
+
+#
+# Job Control
+#
+
+# List jobs in the long format by default.
+setopt LONG_LIST_JOBS
+
+#
+# Scripts and Functions
+#
+
+# Perform implicit tees or cats when multiple redirections are attempted.
+setopt MULTIOS

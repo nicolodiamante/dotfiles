@@ -1,0 +1,51 @@
+#
+# Homebrew Bundle
+# See: https://github.com/Homebrew/homebrew-bundle
+#
+
+#
+# 'brew tap'
+#
+
+tap "homebrew/bundle"
+tap "homebrew/cask"
+
+#
+# 'brew install'
+
+brew "coreutils"
+brew "curl"
+brew "git"
+brew "git-lfs"
+brew "mas"
+brew "nano"
+brew "node"
+#brew "nvm"
+brew "zsh"
+brew "zsh-autosuggestions"
+brew "zsh-completions"
+
+#
+# 'brew install --cask'
+#
+
+cask "adobe-creative-cloud"
+cask "discord"
+cask "figma"
+cask "tunnelbear"
+cask "visual-studio-code"
+
+#
+# 'mas install'
+#
+
+mas "AdGuard for Safari", id: 1440147259
+#mas "Amphetamine", id: 937984704
+mas "Gifski", id: 1351639930
+mas "Grammarly for Safari", id: 1462114288
+mas "Keynote", id: 409183694
+mas "Magnet", id: 441258766
+mas "Numbers", id: 409203825
+mas "Pages", id: 409201541
+mas "TestFlight", id:899247664
+#mas "Xcode", id: 497799835

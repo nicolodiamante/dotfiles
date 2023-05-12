@@ -1,0 +1,15 @@
+#
+# System-wide login for interactive zsh(1) shells.
+# Executes commands at login post-zshrc.
+#
+
+# Execute code that does not affect the current session in the background.
+# Ref: https://github.com/tracphil/my-zsh/blob/master/zlogin
+{
+  # Compile the completion dump to increase startup speed.
+  zcompdump="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${HOST}-${ZSH_VERSION}"
+  if [[ -s "$zcompdump" && (! -s "${zcompdump}.zwc" || \
+  "$zcompdump" -nt "${zcompdump}.zwc") ]]; then
+    zcompile "$zcompdump"
+  fi
+} &!

@@ -1,0 +1,141 @@
+#
+# Environment variables available system-wide and inherited
+# by all spawned child processes and shells.
+#
+
+#
+# Secret key management for GnuPG
+# See: https://linux.die.net/man/1/gpg-agent
+#
+
+GPG_TTY=$(tty)
+GPG_INFO="${HOME}/.gpg-agent-info"
+
+export GPG_TTY
+if [[ -f "$GPG_INFO" ]]; then
+  . "${HOME}/.gpg-agent-info"
+  export GPG_AGENT_INFO
+  export SSH_AUTH_SOCK
+  export SSH_AGENT_PID
+fi
+
+#
+# Browser
+#
+
+if [[ "$OSTYPE" =~ ^darwin* ]]; then
+  export BROWSER='open'
+fi
+
+#
+# Clipboard.
+#
+
+# Accessing the macOS clipboard.
+alias cc='pbcopy'
+alias cp='pbpaste'
+
+#
+# Colors
+#
+
+# This sets up colors properly.
+if infocmp xterm-256color >/dev/null 2>&1; then
+  export TERM='xterm-256color'
+fi
+
+# Enable ls colorized output.
+# See: https://www.gnu.org/software/coreutils/manual/html_node/dircolors-invocation.html
+if type dircolors > /dev/null && [[ -f "$DOTFILES_ROOT/lib/coreutils/dircolors" ]]; then
+  eval $(gdircolors ${DOTFILES_ROOT}/lib/coreutils/dircolors)
+fi
+
+# Colorize the `ls` output
+alias ls='ls --color=auto'
+
+# Enable colored `grep` output
+# Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
+# Ref: http://www.gnu.org/software/grep/manual/grep.html
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+export GREP_COLOR='01;32'
+
+#
+# `diff`
+#
+
+# Compare files line by line.
+# Output NUM (default 3) lines of unified context.
+alias diff='diff -U'
+
+#
+# Editor
+#
+
+# Preferred editor for local and remote sessions
+if [[ -n "$SSH_CONNECTION" || "$UID" -eq 0 ]]; then
+   export EDITOR="$(which nano)"
+else
+  if [[ -a "/Applications/Visual Studio Code.app" ]]; then
+    export EDITOR="code"
+    export VISUAL="${EDITOR}"
+  else
+    export EDITOR="$(which nano)"
+  fi
+fi
+alias editor='${EDITOR}'
+alias e='editor'
+
+#
+# Language, date and time
+#
+
+# Correctly display UTF-8 with combining characters.
+if [[ "$(locale LC_CTYPE)" == "UTF-8" ]]; then
+  setopt COMBINING_CHARS
+fi
+
+# Set basic configurations for Unix core applications.
+export LANG=${LANG/*/en_GB.UTF-8}
+export LC_MESSAGES=${LC_MESSAGES:-POSIX}
+
+# System Time Zone.
+# see `man systemsetup`
+# Ref: https://bit.ly/3y5QVdW
+export TZ=:/etc/localtime
+
+# Set the default time style.
+# Ref: https://bit.ly/3txMhDC
+# Ref: https://bit.ly/3dnTkbs
+export DATE_STYLE='+%A, %_d %B %Y, %H:%M:%S %Z'
+export TIME_STYLE='+%_d %b %Y %H:%M'
+export HIST_TIME_STYLE='%_d %b %H:%M:%S'
+
+# Set the date.
+alias date='date ${DATE_STYLE}'
+
+#
+# `less`
+#
+
+# This affects every invocation of `less`.
+# -i   case-insensitive search unless search string contains uppercase letters
+# -R   color
+# -F   exit if there is less than one page of content
+# -X   keep content on screen after exit
+# -M   show more info at the bottom prompt line
+# -x4  tabs are 4 instead of 8
+export LESS=-RFX
+export LESSCHARSET=utf-8
+export MANPAGER=less
+export PAGER=less
+
+#
+# `sudo`
+#
+
+# Enable simple aliases to be sudo'ed. If the last character of the
+# alias value is a space or tab character, then the next command word
+# following the alias is also checked for alias expansion.
+alias sudo='sudo '

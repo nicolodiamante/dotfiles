@@ -1,0 +1,61 @@
+#
+# Environment variables for Xcode.
+#
+
+# Load configurations if Xcode is available.
+[[ -a "/Applications/Xcode.app" ]] || return
+
+# Opens a file or files in the Xcode IDE.
+# Multiple files are opened in multi-file browser
+# Author: @possen
+xco() {
+  if [[ $# == 0 ]]; then
+    echo "Specify file/s to open in xcode."
+    return 1
+  fi
+  echo "${xcode_files}"
+  open -a "Xcode.app" "$@"
+}
+
+# Opens the current directory in Xcode as an Xcode project. This will open
+# one of the .xcworkspace and .xcodeproj files that it can find in the
+# current working directory. You can also specify a directory to look in for
+# the Xcode files. Returns 1 if it didn't find any relevant files.
+# Author: @subdigital
+# Ref: https://gist.github.com/subdigital/5420709
+xcd() {
+  local xcode_proj
+  if [[ $# == 0 ]]; then
+    xcode_proj=(*.{xcworkspace,xcodeproj}(N))
+  else
+    xcode_proj=($1/*.{xcworkspace,xcodeproj}(N))
+  fi
+
+  if [[ ${#xcode_proj} -eq 0 ]]; then
+    if [[ $# == 0 ]]; then
+      echo "No xcworkspace/xcodeproj file found in the current directory."
+    else
+      echo "No xcworkspace/xcodeproj file found in $1."
+    fi
+    return 1
+  else
+    local active_path
+    active_path=$(xcode-select -p)
+    active_path=${active_path%%/Contents/Developer*}
+    echo "Found ${xcode_proj[1]}. Opening with ${active_path}"
+    open -a "$active_path" "${xcode_proj[1]}"
+  fi
+}
+
+#
+# Aliases
+#
+
+# Open Simulator.
+alias xcs='open -a Simulator'
+
+# Build Xcode projects and workspaces.
+alias xcb='xcodebuild'
+
+# Purge all temporary build information.
+alias xcdd='rm -rf ${HOME}/Library/Developer/Xcode/DerivedData/*'

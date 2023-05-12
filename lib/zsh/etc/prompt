@@ -1,0 +1,533 @@
+#
+# Simple v1.0
+# Created by Nicolò Diamante (hi@nicolodiamante.com)
+# https://github.com/nicolodiamante/simple
+# MIT License
+#
+# Visual effects
+# See: http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html#Visual-effects
+# precmd () => a function which is executed just before each prompt
+# chpwd ()  => a function which is executed whenever the directory is changed
+# \e        => escape sequence for escape (ESC)
+# \a        => escape sequence for bell (BEL)
+# %B (%b)   => Start (stop) boldface mode
+# %F (%f)   => start (stop) using a different foreground colour
+# %n        => expands to $USERNAME
+# %m        => expands to hostname up to first '.'
+# %(?..)    => conditional - %(condition.true.false)
+#
+# The following diagram shows the structure of the prompt:
+# ┌───────────────────────────────────────────── user
+# │    ┌──────────────────────────────────────── host
+# │    │        ┌─────────────────────────────── path
+# │    │        │                ┌────────────── git:branch
+# │    │        │                │      ┌─────── git:status
+# │    │        │                │      │ ┌───── git:stash
+# │    │        │                │      │ │ ┌─── git:upstream
+# │    │        │                │      │ │ │
+# user@hostname ~/dev/…/projects master A s 1↓↑2
+# venv ❯
+# │    │
+# │    └──────────────────────────────────────── prompt
+# └───────────────────────────────────────────── virtualenv (or continuation)
+#
+
+#
+# Title Working Directory for Apple Terminal.
+#
+# Tell the terminal about the current working directory at each prompt.
+#
+# Terminal uses this to display the directory in the window title bar
+# and tab bar, and for behaviors including creating a new terminal with
+# the same working directory and restoring the working directory when
+# restoring a terminal for Resume. See Terminal > Preferences for
+# additional information. Borrowed from `/etc/zshrc_Apple_Terminal`.
+#
+
+prompt_copycat_update_title_cwd() {
+  setopt localoptions noshwordsplit
+
+  # Emacs terminal does not support settings the title.
+  (( ${+EMACS} || ${+INSIDE_EMACS} )) && return
+
+  # Percent-encode the pathname.
+  local url_path=''
+  {
+    # Use LC_CTYPE=C to process text byte-by-byte and
+    # LC_COLLATE=C to compare byte-for-byte. Ensure that
+    # LC_ALL and LANG are not set so they don't interfere.
+    local i ch hexch LC_CTYPE=C LC_COLLATE=C LC_ALL= LANG=
+    for ((i = 1; i <= ${#PWD}; ++i)); do
+      ch="$PWD[i]"
+      if [[ "$ch" =~ [/._~A-Za-z0-9-] ]]; then
+        url_path+="$ch"
+      else
+        printf -v hexch "%02X" "'$ch"
+        url_path+="%$hexch"
+      fi
+    done
+  }
+
+  # Identify the user, the hostname and if is in a git repo.
+  prompt_copycat_update_title_remote() {
+
+    # Show `username@host` if connected via SSH.
+    local remote=''
+    if [[ $ssh_connection || $UID -eq 0 ]]; then
+      # Expand in-place in case ignore-escape is used.
+      hostname="${(%):-%n}@${(%):-%m}"
+      remote="${hostname}"
+    fi
+
+    # Show git branch.
+    # if… HEAD isn’t a symbolic ref (typical branch),
+    # then… get a tracking remote branch or tag
+    # otherwise… get the short SHA for the latest commit
+    # lastly just give up.
+    branch="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || \
+            git describe --all --exact-match HEAD 2> /dev/null || \
+            git rev-parse --short HEAD 2> /dev/null || \
+            echo '(unknown)')"
+
+    # Check whether inside git repository and not being ignored by git.
+    git_inside_tree="$(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}")"
+    git_check_ignore="$(git check-ignore -q . 2> /dev/null; echo "${?}")"
+
+    if [[ $git_inside_tree -eq 0 && $git_check_ignore -eq 1 ]]; then
+      git_branch="${branch} ◂ git branch"
+      remote=${git_branch}
+    fi
+
+    if [[ $ssh_connection || $UID -eq 0 ]] && \
+       [[ $git_inside_tree -eq 0 && $git_check_ignore -eq 1 ]]; then
+      remote="${git_branch} — ${hostname}"
+    fi
+
+    printf '\e]0;%s\a' "${remote}"
+  }
+
+  # Set title atomically in one print statement.
+  # Identify the directory using a "file:" scheme URL, including
+  # the host name to disambiguate local vs. remote paths.
+  printf '\e]7;%s\a' "file://${HOST}${url_path}"
+}
+
+#
+# User and host.
+#
+
+prompt_copycat_state_setup() {
+  setopt localoptions noshwordsplit
+
+  # Check SSH_CONNECTION and the current state
+  ssh_connection=${SSH_CONNECTION:-$PROMPT_copycat_SSH_CONNECTION}
+
+  if [[ -z $ssh_connection ]] && (( $+commands[who] )); then
+    # When changing user on a remote system, the $SSH_CONNECTION
+    # environment variable can be lost. Attempt detection via `who`
+    local who_out
+    who_out=$(who -m 2>/dev/null)
+    if (( $? )); then
+      # Who am I not supported, fallback to plain who
+      local -a who_in
+      who_in=( ${(f)"$(who 2>/dev/null)"} )
+      who_out="${(M)who_in:#*[[:space:]]${TTY#/dev/}[[:space:]]*}"
+    fi
+
+    # Simplified, only checks partial pattern
+    local reIPv6='(([0-9a-fA-F]+:)|:){2,}[0-9a-fA-F]+'
+
+    # Simplified, allows invalid ranges
+    local reIPv4='([0-9]{1,3}\.){3}[0-9]+'
+
+    # Here we assume two non-consecutive periods represents a
+    # hostname. This matches `foo.bar.baz`, but not `foo.bar`
+    local reHostname='([.][^. ]+){2}'
+
+    # Usually the remote address is surrounded by parenthesis, but
+    # not on all systems (e.g. busybox)
+    local -H MATCH MBEGIN MEND
+    if [[ $who_out =~ "\(?($reIPv4|$reIPv6|$reHostname)\)?\$" ]]; then
+      # Export variable to allow detection propagation inside
+      # shells spawned by this one (e.g. tmux does not always
+      # inherit the same tty, which breaks detection)
+      export PROMPT_copycat_SSH_CONNECTION=$ssh_connection
+    fi
+    unset MATCH MBEGIN MEND
+  fi
+
+  # Define the host.
+  hostname='@%F{$prompt_copycat_colors[host]}%m%f'
+
+  # Show `username@host` if logged in through SSH.
+  if [[ -n $ssh_connection ]]; then
+    prompt_copycat_state_connection='%F{$prompt_copycat_colors[user]}%n%f'"$hostname"
+  fi
+
+  # Show `username@host` if inside a container.
+  prompt_copycat_is_inside_container && username='%F{$prompt_copycat_colors[user]}%n%f'"$hostname"
+
+  # Show `username` if root.
+  if [[ $UID -eq 0 ]]; then
+    prompt_copycat_state_connection='%F{$prompt_copycat_colors[user:root]}%n%f'"$hostname"
+  fi
+}
+
+# Return true if executing inside a Docker or LXC container.
+prompt_copycat_is_inside_container() {
+  local -r cgroup_file='/proc/1/cgroup'
+  [[ -r "$cgroup_file" && "$(< $cgroup_file)" = *(lxc|docker)* ]] || \
+  [[ "$container" == "lxc" ]]
+}
+
+#
+# PATH
+#
+
+prompt_copycat_dirtrim() {
+  # Split PWD into the first element, elipsis and the last subfolder.
+  local expand_path="$(PWD | sed 's@'"$HOME"'@~@')"
+  local split=2
+  local pwd_trim='…'
+  if [[ $(echo ${expand_path} | grep -o '/' | wc -l) -gt $split ]]; then
+    echo ${expand_path} | cut -d'/' -f1-$split | xargs -I{} echo {}"/${pwd_trim}/${expand_path##*/}"
+  else
+    echo ${expand_path}
+  fi
+}
+
+prompt_copycat_render_path() {
+  setopt localoptions noshwordsplit
+
+  # Initialize the path array.
+  local -a path_parts
+
+  prompt_copycat_state_setup
+  if [[ -n $prompt_copycat_state_connection ]]; then
+    path_parts+="${prompt_copycat_state_connection}"
+  fi
+
+  # Automatically trim long paths in the prompt.
+  path_parts+="%B%F{$prompt_copycat_colors[path]}\$(prompt_copycat_dirtrim)%f%b"
+
+  # Show git status after the path.
+  [[ -n $(prompt_copycat_dirtrim) ]] && path_parts+="\$(prompt_copycat_git)"
+
+  # Show nvm status after the path.
+  [[ -n $(prompt_copycat_dirtrim) ]] && path_parts+="\$(prompt_copycat_nvm)"
+
+  # Join parts, space separated.
+  prompt_copycat_path=${(j. .)path_parts}
+}
+
+#
+# Git status - Show the working tree status.
+#
+
+prompt_copycat_git() {
+  setopt localoptions noshwordsplit
+
+  # Sets `GIT_TERMINAL_PROMPT=0` to disable authentication prompt
+  # for Git fetch (Git 2.3+).
+  export GIT_TERMINAL_PROMPT=0
+
+  # Set SSH `BachMode` to disable all interactive SSH password prompting.
+  export GIT_SSH_COMMAND="${GIT_SSH_COMMAND:-"ssh"} -o BatchMode=yes"
+
+  # Check if the current directory is in a Git repository.
+  [[ $git_inside_tree -eq 0 && $git_check_ignore -eq 1 ]] || return
+
+  # Ensure index is up to date
+  git update-index --really-refresh -q &>/dev/null
+
+  # Check for what branch we're on.
+  local -A prompt_copycat_git_info
+  prompt_copycat_git_info[branch]=${branch}
+
+  if [[ -n "${prompt_copycat_git_info[branch]}" ]]; then
+    # Configuration
+    # Ref: https://git-scm.com/docs/git-status
+    local -A prompt_copycat_git_status
+    prompt_copycat_git_status=(
+      untracked      '?'
+      ignored        '!'
+      modified       'M'
+      added          'A'
+      deleted        'D'
+      renamed        'R'
+      copied         'C'
+      unmerged       'U'
+      stashed        's'
+      diverged       '↓↑'
+      ahead          '↑'
+      behind         '↓'
+    )
+
+    # Status
+    local INDEX=$(command git status --porcelain -b 2> /dev/null)
+
+    # Check for untracked files
+    if $(echo "$INDEX" | command grep -E '^\?\? ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[untracked]}"
+    fi
+
+    # Check for ignored files
+    if $(echo "$INDEX" | command grep -E '^\!\! ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[ignored]}"
+    fi
+
+    # Check for modified files
+    if $(echo "$INDEX" | command grep '^[ MARC]M ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[modified]}"
+    fi
+
+    # Check for added changes
+    if $(echo "$INDEX" | command grep '^A[ MDAU] ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[added]}"
+    elif $(echo "$INDEX" | command grep '^M[ MD] ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[added]}"
+    elif $(echo "$INDEX" | command grep '^UA' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[added]}"
+    fi
+
+    # Check for deleted files
+    if $(echo "$INDEX" | command grep '^[MARCDU ]D ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[deleted]}"
+    elif $(echo "$INDEX" | command grep '^D[ UM] ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[deleted]}"
+    fi
+
+    # Check for renamed files
+    if $(echo "$INDEX" | command grep '^R[ MD] ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[renamed]}"
+    fi
+
+    # Check for copied files
+    if $(echo "$INDEX" | command grep '^C[ MD] ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[copied]}"
+    elif $(echo "$INDEX" | command grep '^[ D]C ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[copied]}"
+    fi
+
+    # Check for unmerged files
+    if $(echo "$INDEX" | command grep '^U[UDA] ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[unmerged]}"
+    elif $(echo "$INDEX" | command grep '^AA ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[unmerged]}"
+    elif $(echo "$INDEX" | command grep '^DD ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[unmerged]}"
+    elif $(echo "$INDEX" | command grep '^[DA]U ' &> /dev/null); then
+      prompt_copycat_git_info[status]="${prompt_copycat_git_status[unmerged]}"
+    fi
+
+    # Check for stashes
+    if $(command git rev-parse --verify refs/stash >/dev/null 2>&1); then
+      prompt_copycat_git_info[stash]="${prompt_copycat_git_status[stashed]}"
+    fi
+
+    # Check whether branch is ahead (unpushed changes ahead of remote branch)
+    local is_ahead=false
+    if $(echo "$INDEX" | command grep '^## [^ ]\+ .*ahead' &> /dev/null); then
+      is_ahead=true
+    fi
+
+    # Check whether branch is behind (unpulled changes behind of remote branch)
+    local is_behind=false
+    if $(echo "$INDEX" | command grep '^## [^ ]\+ .*behind' &> /dev/null); then
+      is_behind=true
+    fi
+
+    # Show how many commits each branch is ahead or behind its upstream.
+    [[ "$is_ahead" == true ]] && No_ahead="$(command git rev-list @{u}..HEAD | wc -l)"
+    [[ "$is_behind" == true ]] && No_behind="$(command git rev-list HEAD..@{u} | wc -l)"
+
+    # Check wheather branch has diverged (diverged changes with remote branch)
+    if [[ "$is_ahead" == true && "$is_behind" == true ]]; then
+      prompt_copycat_git_info[upstream]="${No_behind}${prompt_copycat_git_status[diverged]}${No_ahead}"
+    else
+      [[ "$is_ahead" == true ]] && prompt_copycat_git_info[upstream]="${No_ahead}${prompt_copycat_git_status[ahead]}"
+      [[ "$is_behind" == true ]] && prompt_copycat_git_info[upstream]="${No_behind}${prompt_copycat_git_status[behind]}"
+    fi
+  fi
+
+  # Initialize the git array.
+  local -a git_parts
+
+  # Set Status
+  git_parts+="%F{$prompt_copycat_colors[git:branch]}${prompt_copycat_git_info[branch]}%f"
+
+  if [[ -n $prompt_copycat_git_info[status] ]]; then
+    git_parts+="%F{$prompt_copycat_colors[git:status]}${prompt_copycat_git_info[status]}%f"
+  fi
+
+  if [[ -n $prompt_copycat_git_info[stash] ]]; then
+    git_parts+="%F{$prompt_copycat_colors[git:stash]}${prompt_copycat_git_info[stash]}%f"
+  fi
+
+  if [[ -n $prompt_copycat_git_info[upstream] ]]; then
+    git_parts+="%F{$prompt_copycat_colors[git:upstream]}${prompt_copycat_git_info[upstream]}%f"
+  fi
+
+  # Join parts, space separated.
+  prompt_copycat_git_parts=${(j. .)git_parts}
+
+  # Show it
+  echo "${prompt_copycat_git_parts}"
+}
+
+#
+# Setup requirements for prompt.
+#
+
+prompt_copycat_precmd() {
+  # Prevent percentage showing up if output doesn't end with a newline.
+  export PROMPT_EOL_MARK=''
+
+  prompt_opts=(subst percent)
+
+  # Borrowed from `promptinit`. Sets the prompt options in case
+  # copycat was not initialized via `promptinit`.
+  setopt noprompt{bang,cr,percent,subst} "prompt${^prompt_opts[@]}"
+
+ # Register the functions so that they are called at each prompt.
+  autoload -Uz add-zsh-hook
+  add-zsh-hook precmd prompt_newline_between_prompts
+  add-zsh-hook precmd prompt_copycat_update_title_remote
+  add-zsh-hook chpwd prompt_copycat_update_title_cwd
+
+  # Since the function will run on _changing_ the dir
+  # it won't run automatically at shell start so, run
+  # it once now, to update:
+  prompt_copycat_update_title_cwd
+
+  # Print a message on SSH connection.
+  if [[ -n "$SSH_CLIENT" ]]; then
+    # Print macOS operating system version.
+    if [[ "$OSTYPE" = darwin* ]]; then
+      OS_VERSION=" ($(sw_vers -productName) $(sw_vers -productVersion))"
+    fi
+
+    # SSH connection, print hostname and macOS version.
+    prompt_copycat_state_connection="Connected to $(scutil --get ComputerName)${OS_VERSION}"
+    echo "${prompt_copycat_state_connection}"
+  fi
+
+  # Get the nvm-controlled Node.js version.
+  prompt_copycat_nvm() {
+    which nvm &>/dev/null || return
+    local nvm_prompt="%F{$prompt_copycat_colors[prompt:nvmenv]}${$(nvm current)#v}%f"
+    echo "${nvm_prompt}"
+  }
+
+  # Check if we should display the virtual env.
+  virtualenv_prompt_info() {
+    # Get virtual env.
+    local venv=''
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+      # Strip out the path and just leave the env name.
+      venv="%F{$prompt_copycat_colors[prompt:virtualenv]}${VIRTUAL_ENV:t}%f"
+    fi
+
+    [[ -n "$venv" ]] && echo "${venv} "
+  }
+  prompt_copycat_virtualenv="\$(virtualenv_prompt_info)"
+
+  # Disables prompt mangling in virtual_env/bin/activate
+  export VIRTUAL_ENV_DISABLE_PROMPT=1
+}
+
+prompt_copycat_preprompt_render() {
+  # Load precmd
+  prompt_copycat_precmd
+
+  # Print a newline.
+  if [[ -z $prompt_newline ]]; then
+    # This variable needs to be set, usually set by promptinit.
+    typeset -g prompt_newline=$'\n%{\r%}'
+  fi
+
+  # Print a newline only between the prompts.
+  if [[ $ssh_connection || $UID -eq 0 ]]; then
+    prompt_newline_between_prompts() { print }
+  else
+    prompt_newline_between_prompts() $funcstack[1]() echo && clear
+  fi
+
+  # Set the colors
+  typeset -gA prompt_copycat_colors_default prompt_copycat_colors
+  prompt_copycat_colors_default=(
+    git:branch           'default'
+    git:stash            'default'
+    git:status           'default'
+    git:upstream         'default'
+    nvmenv               'default'
+    host                 'default'
+    path                 'default'
+    prompt:default       'green'
+    prompt:error         'red'
+    prompt:continuation  'default'
+    user                 'default'
+    user:root            'default'
+    virtualenv           'default'
+  )
+  prompt_copycat_colors=("${(@kv)prompt_copycat_colors_default}")
+}
+
+#
+# Setup prompt
+#
+
+prompt_copycat_setup() {
+  # Load Pre-commands
+  [[ -z $prompt_copycat_preprompt_render ]] && prompt_copycat_preprompt_render
+
+  # Construct the new prompt.
+  local -ah ps1_parts
+
+  # Set the prompt string, turns red if the previous command didn't exit with 0.
+  local prompt_indicator='%(?.%F{$prompt_copycat_colors[prompt:default]}.%F{$prompt_copycat_colors[prompt:error]})❯%f '
+  prompt_copycat_render_path && ps1_parts=(
+                                          ${prompt_copycat_path}
+                                          ${prompt_newline}
+                                          ${prompt_copycat_virtualenv}
+                                          ${prompt_indicator}
+                                       )
+  PROMPT="${(j..)ps1_parts}"
+
+  # Indicate continuation prompt.
+  PROMPT2='%F{$prompt_copycat_colors[prompt:continuation]}… %(1_.%_ .%_)%f'$prompt_indicator
+
+  # Store prompt expansion symbols for in-place expansion via (%). For
+  # some reason it does not work without storing them in a variable first.
+  typeset -ga prompt_copycat_debug_depth
+  prompt_copycat_debug_depth=('%e' '%N' '%x')
+
+  # Compare is used to check if %N equals %x. When they differ, the main
+  # prompt is used to allow displaying both filename and function. When
+  # they match, we use the secondary prompt to avoid displaying duplicate
+  # information.
+  local -A ps4_parts
+  ps4_parts=(
+    depth     '%F{green}${(l:${(%)prompt_copycat_debug_depth[1]}::+:)}%f'
+    compare   '${${(%)prompt_copycat_debug_depth[2]}:#${(%)prompt_copycat_debug_depth[3]}}'
+    main      '%F{default}${${(%)prompt_copycat_debug_depth[3]}:t}%f:%F{green}%I%f @%F{default}%N%f:%F{green}%i%f '
+    secondary '%F{default}%N%f%F{green}:%i%f '
+    prompt    '%F{green}›%f '
+  )
+
+  # Combine the parts with conditional logic. First the `:+` operator is
+  # used to replace `compare` either with `main` or an empty string. Then
+  # the `:-` operator is used so that if `compare` becomes an empty
+  # string, it is replaced with `secondary`.
+  local ps4_symbols='${${'${ps4_parts[compare]}':+"'${ps4_parts[main]}'"}:-"'${ps4_parts[secondary]}'"}'
+
+  # Improve the debug prompt (PS4), show depth by repeating the +-sign and
+  # add colors to highlight essential parts like file and function name.
+  PROMPT4="${ps4_parts[depth]} ${ps4_symbols}${ps4_parts[prompt]}"
+
+  # Set the style of the sudo prompt.
+  export SUDO_PROMPT=$(print -P "(%n@%m) Password:")
+}
+
+# Pass all arguments to the prompt_copycat_setup function.
+prompt_copycat_setup "$@"

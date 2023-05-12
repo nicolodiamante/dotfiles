@@ -1,0 +1,45 @@
+#
+# PATH
+# Ref: http://zsh.sourceforge.net/Guide/zshguide02.html#l24
+#
+
+path=(
+/usr/local/bin
+/usr/bin
+/bin
+/usr/local/sbin
+/usr/sbin
+/sbin
+)
+
+# Directories to be prepended to the PATH
+prepend=(
+  /usr/local/opt/curl/bin
+  /usr/local/opt/coreutils/libexec/gnubin
+)
+
+# Directories to be appended to the PATH
+append=(
+  $HOME/bin
+  ${XDG_CONFIG_HOME:-$HOME/.config}/node/node_modules/bin
+  /Library/Apple/usr/bin
+  "/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
+)
+
+# Prepend directories to the PATH
+for pre in ${prepend}; do
+  if [[ -d ${pre} && -z ${path[(r)$pre]} ]]; then
+    path=($pre $path)
+  fi
+done
+
+# Append directories to the PATH
+for app in ${append}; do
+  if [[ -d ${app} && -z ${path[(r)$app]} ]]; then
+    path=($path $app)
+  fi
+done
+
+unset prepend append
+
+export PATH

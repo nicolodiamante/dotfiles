@@ -1,0 +1,440 @@
+#
+# This is a collection of extension: color mappings, suitable to use as your
+# LS_COLORS environment variable. Most of them use the extended color map,
+# described in the ECMA-48 document; in other words, you'll need a terminal
+# with capabilities of displaying 256 colors.
+#
+
+# COLOR needs one of these arguments:
+# 'tty' colorizes output to ttys, but not pipes
+# 'all' adds color characters to all output
+# 'none' shuts colorization off
+COLOR tty
+
+# Below are TERM entries, which can be a glob patterns, to match against the
+# TERM environment variable to determine if it is colorizable.
+TERM alacritty
+TERM alacritty-direct
+TERM ansi
+TERM *color*
+TERM con[0-9]*x[0-9]*
+TERM cons25
+TERM console
+TERM cygwin
+TERM dtterm
+TERM dvtm
+TERM dvtm-256color
+TERM Eterm
+TERM eterm-color
+TERM fbterm
+TERM gnome
+TERM gnome-256color
+TERM hurd
+TERM jfbterm
+TERM konsole
+TERM konsole-256color
+TERM kterm
+TERM linux
+TERM linux-c
+TERM mlterm
+TERM putty
+TERM putty-256color
+TERM rxvt*
+TERM rxvt-unicode
+TERM rxvt-256color
+TERM rxvt-unicode256
+TERM screen*
+TERM screen-256color
+TERM st
+TERM st-256color
+TERM terminator
+TERM tmux*
+TERM tmux-256color
+TERM vt100
+TERM xterm*
+TERM xterm-color
+TERM xterm-88color
+TERM xterm-256color
+TERM xterm-kitty
+
+# EIGHTBIT (8-bit output)
+# '1' on
+# '0' off
+EIGHTBIT 0
+
+#
+# ANSI Color Codes
+#
+# Text styling
+# 00 │ reset
+# ───┼──────────────────────
+# 01 │ bold, brighter color
+# 02 │ fainter color
+# 03 │ italic
+# 04 │ underline
+# 05 │ blink
+# 07 │ invert colors
+# 08 │ invisible
+# 09 │ strikethrough
+#
+# Text colors
+# 39 │ reset
+# ───┼──────────────────────
+# 30 │ black
+# 31 │ red
+# 32 │ light green
+# 33 │ yellow
+# 34 │ dark blue
+# 35 │ purple
+# 36 │ cyan
+# 37 │ light grey
+#
+# 38;2;ʀ;ɢ;ʙ │ replace ʀ, ɢ, and ʙ with RGB values from 0 to 255
+# 38;5;ɴ     │ replace ɴ with value from 256-color chart
+#
+# Background colors
+# 49 │ reset
+# ───┼──────────────────────
+# 40 │ black
+# 41 │ red
+# 42 │ light green
+# 43 │ yellow
+# 44 │ dark blue
+# 45 │ purple
+# 46 │ cyan
+# 47 │ light grey
+#
+# 48;2;ʀ;ɢ;ʙ │ replace ʀ, ɢ, and ʙ with RGB values from 0 to 255
+# 48;5;ɴ     │ replace ɴ with value from 256-color chart
+#
+
+#
+# Global Defaults
+#
+
+NORMAL 00                       # no color code at all
+RESET 0                         # reset to "normal" color
+
+FILE 00                         # regular file: use no color at all
+DIR 01;34                       # directory
+LINK 36                         # symbolic link
+MULTIHARDLINK 36                # regular file with more than one link
+
+FIFO 01;36                      # pipe
+SOCK 35                         # socket
+DOOR 01;36                      # door
+BLK 01;35                       # block device driver
+CHR 35                          # Character device (unbuffered) special file
+
+ORPHAN 31                       # symlink to nonexistent file, or non-stat'able file…
+MISSING 01;37;41                # …and the files they point to
+
+EXEC 01;32                      # this is for files with execute permission
+
+SETUID 01;37                    # file that is setuid (u+s)
+SETGID 01;37                    # file that is setgid (g+s)
+CAPABILITY 01;37                # file with capability
+
+STICKY_OTHER_WRITABLE 01;37;44  # dir that is sticky and other-writable (+t,o+w)
+OTHER_WRITABLE 01;34            # dir that is other-writable (o+w) and not sticky
+STICKY 37;44                    # dir with the sticky bit set (+t) and not other-writable
+
+#
+# List any file extensions like '.gz' or '.tar' that you would like ls
+# to colorize below. Put the extension, a space, and the color init string.
+#
+
+# Archives or compressed
+.7z 01;37
+.ace 01;37
+.alz 01;37
+.arc 01;37
+.arj 01;37
+.bz 01;37
+.bz2 01;37
+.cab 01;37
+.cpio 01;37
+.deb 01;37
+.dz 01;37
+.ear 01;37
+.gz 01;37
+.jar 01;37
+.lha 01;37
+.lrz 01;37
+.lz 01;37
+.lz4 01;37
+.lzh 01;37
+.lzma 01;37
+.lzo 01;37
+.rar 01;37
+.rpm 01;37
+.rz 01;37
+.sar 01;37
+.t7z 01;37
+.tar 01;37
+.taz 01;37
+.tbz 01;37
+.tbz2 01;37
+.tgz 01;37
+.tlz 01;37
+.txz 01;37
+.tz 01;37
+.tzo 01;37
+.tzst 01;37
+.war 01;37
+.xz 01;37
+.z 01;37
+.Z 01;37
+.zip 01;37
+.zoo 01;37
+.zst 01;37
+
+# Audio
+.aac 37
+.aif 37
+.au 37
+.flac 37
+.m4a 37
+.mid 37
+.midi 37
+.mka 37
+.mp3 37
+.mpa 37
+.mpeg 37
+.mpg 37
+.ogg 37
+.opus 37
+.ra 37
+.wav 37
+.wma 37
+.wpl 37
+
+# Disc and media
+.bin 02;37
+.dmg 02;37
+.iso 02;37
+
+# Data and database
+.csv 02;37
+.dat 02;37
+.db  02;37
+.dbf 02;37
+.log 02;37
+.mdb 02;37
+.sav 02;37
+.sql 02;37
+.xml 02;37
+
+# Executables
+.app 01;36
+.apk 01;36
+.bat 01;36
+.bin 01;36
+.btm 01;36
+.cgi 01;36
+.cmd 01;36
+.com 01;36
+.exe 01;36
+.gadget 01;36
+.jar 01;36
+.msi 01;36
+.pl 01;36
+.py 01;36
+.reg 01;36
+.wsf 01;36
+
+# Fonts
+.fnt 02;37
+.fon 02;37
+.otf 02;37
+.ttf 02;37
+
+# Graphic related
+.ai 37
+.aia 37
+.ait 37
+.icc 37
+.ind 37
+.indb 37
+.indd 37
+.indt 37
+.fig 37
+.ps 37
+.psd 37
+.pxr 37
+.qxd 37
+.qxp 37
+.qxt 37
+.sketch 37
+.xd 37
+
+# Images
+.bmp 37
+.cgm 37
+.dl 37
+.dng 37
+.dvi 37
+.emf 37
+.eps 37
+.gif 37
+.jpeg 37
+.jpg 37
+.JPG 37
+.mng 37
+.mjpg 37
+.mjpeg 37
+.pbm 37
+.pcx 37
+.pgm 37
+.png 37
+.PNG 37
+.ppm 37
+.pps 37
+.ppsx 37
+.ps 37
+.raw 37
+.svg 37
+.svgz 37
+.tga 37
+.tif 37
+.tiff 37
+.xbm 37
+.xcf 37
+.xpm 37
+.xwd 37
+.xwd 37
+.yuv 37
+
+# Internet related
+.asp 37
+.aspx 37
+.cer 37
+.cfm 37
+.cgi 37
+.css 37
+.htm 37
+.html 37
+.js 37
+.json 37
+.jsp 37
+.less 37
+.p 37
+.part 37
+.php 37
+.pl 37
+.py 37
+.rdf 37
+.rss 37
+.scss 37
+.shtml 37
+.xhtml 37
+
+# Presentation
+.key 37
+.odp 37
+.pps 37
+.ppt 37
+.pptx 37
+
+# Programming
+.0 01;36
+.1 01;36
+.c 01;36
+.C 01;36
+.cc 01;36
+.csh 01;36
+.cxx 01;36
+.class 01;36
+.cpp 01;36
+.cs 01;36
+.el 01;36
+.h 01;36
+.hs 01;36
+.java 01;36
+.l 01;36
+.man 01;36
+.md 01;36
+.mk 01;36
+.n 01;36
+.pl 01;36
+.pod 01;36
+.pm 01;36
+.rb 01;36
+.sh 01;36
+.swift 01;36
+.vb 01;36
+.vim 01;36
+.zsh 01;36
+
+# Spreadsheet
+.ods 37
+.xls 37
+.xlsm 37
+.xlsx 37
+
+# System
+*~ 02;37
+.bak 02;37
+.BAK 02;37
+.DS_Store 02;37
+.localized 02;37
+.log 02;37
+.log 02;37
+.old 02;37
+.OLD 02;37
+.orig 02;37
+.ORIG 02;37
+.swo 02;37
+.swp 02;37
+.tmp 02;37
+
+# Video
+.3g2 37
+.3gp 37
+.anx 37
+.asf 37
+.avi 37
+.axv 37
+.flc 37
+.fli 37
+.flv 37
+.gl 37
+.h264 37
+.m2v 37
+.m4v 37
+.mkv 37
+.mov 37
+.MOV 37
+.mp4 37
+.mpeg 37
+.mpg 37
+.nuv 37
+.ogm 37
+.ogv 37
+.ogx 37
+.qt 37
+.rm 37
+.rmvb 37
+.swf 37
+.vob 37
+.webm 37
+.wmv 37
+
+# Word processor and text files
+.doc 37
+.docx 37
+.dot 37
+.keynote 37
+.odg 37
+.odt 37
+.otg 37
+.otp 37
+.ots 37
+.ott 37
+.numbers 37
+.pages 37
+.pdf 37
+.rtf 37
+.tex 37
+.txt 37
+.wpd 37
