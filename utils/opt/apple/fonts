@@ -18,8 +18,5 @@ echo 'Apple Developer: installing font families...'
   curl -O https://devimages-cdn.apple.com/design/resources/download/SF-Font-Compact.dmg && hdiutil mount SF-Font-Compact.dmg && sudo installer -package /Volumes/SanFranciscoCompact/San\ Francisco\ Compact.pkg -target /Library/Fonts/ && hdiutil unmount /Volumes/SanFranciscoCompact && rm SF-Font-Compact.dmg
 
   # SF Mono
-  curl -O https://devimages-cdn.apple.com/design/resources/download/SF-Mono.dmg && hdiutil mount SF-Mono.dmg && sudo installer -package /Volumes/SFMonoFonts/SF\ Mono\ Fonts.pkg -target /Library/Fonts/ && hdiutil unmount /Volumes/SFMonoFonts && rm SF-Mono.dmg
-
-  # New York
-  curl -O https://devimages-cdn.apple.com/design/resources/download/NY-Font.dmg && hdiutil mount NY-Font.dmg && sudo installer -package /Volumes/NYFonts/NY\ Fonts.pkg -target /Library/Fonts/ && hdiutil unmount /Volumes/NYFonts && rm NY-Font.dmg && popd
+  curl -O https://devimages-cdn.apple.com/design/resources/download/SF-Mono.dmg && hdiutil mount SF-Mono.dmg && sudo installer -package /Volumes/SFMonoFonts/SF\ Mono\ Fonts.pkg -target /Library/Fonts/ && hdiutil unmount /Volumes/SFMonoFonts && rm SF-Mono.dmg && popd
 } &> /dev/null && cd "${HOME}" && echo 'font families installation complete!'

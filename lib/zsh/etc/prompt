@@ -1,6 +1,6 @@
 #
 # Simple v1.0
-# Created by Nicolò Diamante (hi@nicolodiamante.com)
+# Created by Nicolò Diamante (hello@nicolodiamante.com)
 # https://github.com/nicolodiamante/simple
 # MIT License
 #
@@ -44,7 +44,7 @@
 # additional information. Borrowed from `/etc/zshrc_Apple_Terminal`.
 #
 
-prompt_copycat_update_title_cwd() {
+prompt_simple_update_title_cwd() {
   setopt localoptions noshwordsplit
 
   # Emacs terminal does not support settings the title.
@@ -69,7 +69,7 @@ prompt_copycat_update_title_cwd() {
   }
 
   # Identify the user, the hostname and if is in a git repo.
-  prompt_copycat_update_title_remote() {
+  prompt_simple_update_title_remote() {
 
     # Show `username@host` if connected via SSH.
     local remote=''
@@ -116,11 +116,11 @@ prompt_copycat_update_title_cwd() {
 # User and host.
 #
 
-prompt_copycat_state_setup() {
+prompt_simple_state_setup() {
   setopt localoptions noshwordsplit
 
   # Check SSH_CONNECTION and the current state
-  ssh_connection=${SSH_CONNECTION:-$PROMPT_copycat_SSH_CONNECTION}
+  ssh_connection=${SSH_CONNECTION:-$PROMPT_simple_SSH_CONNECTION}
 
   if [[ -z $ssh_connection ]] && (( $+commands[who] )); then
     # When changing user on a remote system, the $SSH_CONNECTION
@@ -151,30 +151,30 @@ prompt_copycat_state_setup() {
       # Export variable to allow detection propagation inside
       # shells spawned by this one (e.g. tmux does not always
       # inherit the same tty, which breaks detection)
-      export PROMPT_copycat_SSH_CONNECTION=$ssh_connection
+      export PROMPT_simple_SSH_CONNECTION=$ssh_connection
     fi
     unset MATCH MBEGIN MEND
   fi
 
   # Define the host.
-  hostname='@%F{$prompt_copycat_colors[host]}%m%f'
+  hostname='@%F{$prompt_simple_colors[host]}%m%f'
 
   # Show `username@host` if logged in through SSH.
   if [[ -n $ssh_connection ]]; then
-    prompt_copycat_state_connection='%F{$prompt_copycat_colors[user]}%n%f'"$hostname"
+    prompt_simple_state_connection='%F{$prompt_simple_colors[user]}%n%f'"$hostname"
   fi
 
   # Show `username@host` if inside a container.
-  prompt_copycat_is_inside_container && username='%F{$prompt_copycat_colors[user]}%n%f'"$hostname"
+  prompt_simple_is_inside_container && username='%F{$prompt_simple_colors[user]}%n%f'"$hostname"
 
   # Show `username` if root.
   if [[ $UID -eq 0 ]]; then
-    prompt_copycat_state_connection='%F{$prompt_copycat_colors[user:root]}%n%f'"$hostname"
+    prompt_simple_state_connection='%F{$prompt_simple_colors[user:root]}%n%f'"$hostname"
   fi
 }
 
 # Return true if executing inside a Docker or LXC container.
-prompt_copycat_is_inside_container() {
+prompt_simple_is_inside_container() {
   local -r cgroup_file='/proc/1/cgroup'
   [[ -r "$cgroup_file" && "$(< $cgroup_file)" = *(lxc|docker)* ]] || \
   [[ "$container" == "lxc" ]]
@@ -184,7 +184,7 @@ prompt_copycat_is_inside_container() {
 # PATH
 #
 
-prompt_copycat_dirtrim() {
+prompt_simple_dirtrim() {
   # Split PWD into the first element, elipsis and the last subfolder.
   local expand_path="$(PWD | sed 's@'"$HOME"'@~@')"
   local split=2
@@ -196,35 +196,35 @@ prompt_copycat_dirtrim() {
   fi
 }
 
-prompt_copycat_render_path() {
+prompt_simple_render_path() {
   setopt localoptions noshwordsplit
 
   # Initialize the path array.
   local -a path_parts
 
-  prompt_copycat_state_setup
-  if [[ -n $prompt_copycat_state_connection ]]; then
-    path_parts+="${prompt_copycat_state_connection}"
+  prompt_simple_state_setup
+  if [[ -n $prompt_simple_state_connection ]]; then
+    path_parts+="${prompt_simple_state_connection}"
   fi
 
   # Automatically trim long paths in the prompt.
-  path_parts+="%B%F{$prompt_copycat_colors[path]}\$(prompt_copycat_dirtrim)%f%b"
+  path_parts+="%B%F{$prompt_simple_colors[path]}\$(prompt_simple_dirtrim)%f%b"
 
   # Show git status after the path.
-  [[ -n $(prompt_copycat_dirtrim) ]] && path_parts+="\$(prompt_copycat_git)"
+  [[ -n $(prompt_simple_dirtrim) ]] && path_parts+="\$(prompt_simple_git)"
 
   # Show nvm status after the path.
-  [[ -n $(prompt_copycat_dirtrim) ]] && path_parts+="\$(prompt_copycat_nvm)"
+  [[ -n $(prompt_simple_dirtrim) ]] && path_parts+="\$(prompt_simple_nvm)"
 
   # Join parts, space separated.
-  prompt_copycat_path=${(j. .)path_parts}
+  prompt_simple_path=${(j. .)path_parts}
 }
 
 #
 # Git status - Show the working tree status.
 #
 
-prompt_copycat_git() {
+prompt_simple_git() {
   setopt localoptions noshwordsplit
 
   # Sets `GIT_TERMINAL_PROMPT=0` to disable authentication prompt
@@ -241,14 +241,14 @@ prompt_copycat_git() {
   git update-index --really-refresh -q &>/dev/null
 
   # Check for what branch we're on.
-  local -A prompt_copycat_git_info
-  prompt_copycat_git_info[branch]=${branch}
+  local -A prompt_simple_git_info
+  prompt_simple_git_info[branch]=${branch}
 
-  if [[ -n "${prompt_copycat_git_info[branch]}" ]]; then
+  if [[ -n "${prompt_simple_git_info[branch]}" ]]; then
     # Configuration
     # Ref: https://git-scm.com/docs/git-status
-    local -A prompt_copycat_git_status
-    prompt_copycat_git_status=(
+    local -A prompt_simple_git_status
+    prompt_simple_git_status=(
       untracked      '?'
       ignored        '!'
       modified       'M'
@@ -268,61 +268,61 @@ prompt_copycat_git() {
 
     # Check for untracked files
     if $(echo "$INDEX" | command grep -E '^\?\? ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[untracked]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[untracked]}"
     fi
 
     # Check for ignored files
     if $(echo "$INDEX" | command grep -E '^\!\! ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[ignored]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[ignored]}"
     fi
 
     # Check for modified files
     if $(echo "$INDEX" | command grep '^[ MARC]M ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[modified]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[modified]}"
     fi
 
     # Check for added changes
     if $(echo "$INDEX" | command grep '^A[ MDAU] ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[added]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[added]}"
     elif $(echo "$INDEX" | command grep '^M[ MD] ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[added]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[added]}"
     elif $(echo "$INDEX" | command grep '^UA' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[added]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[added]}"
     fi
 
     # Check for deleted files
     if $(echo "$INDEX" | command grep '^[MARCDU ]D ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[deleted]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[deleted]}"
     elif $(echo "$INDEX" | command grep '^D[ UM] ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[deleted]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[deleted]}"
     fi
 
     # Check for renamed files
     if $(echo "$INDEX" | command grep '^R[ MD] ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[renamed]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[renamed]}"
     fi
 
     # Check for copied files
     if $(echo "$INDEX" | command grep '^C[ MD] ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[copied]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[copied]}"
     elif $(echo "$INDEX" | command grep '^[ D]C ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[copied]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[copied]}"
     fi
 
     # Check for unmerged files
     if $(echo "$INDEX" | command grep '^U[UDA] ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[unmerged]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[unmerged]}"
     elif $(echo "$INDEX" | command grep '^AA ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[unmerged]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[unmerged]}"
     elif $(echo "$INDEX" | command grep '^DD ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[unmerged]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[unmerged]}"
     elif $(echo "$INDEX" | command grep '^[DA]U ' &> /dev/null); then
-      prompt_copycat_git_info[status]="${prompt_copycat_git_status[unmerged]}"
+      prompt_simple_git_info[status]="${prompt_simple_git_status[unmerged]}"
     fi
 
     # Check for stashes
     if $(command git rev-parse --verify refs/stash >/dev/null 2>&1); then
-      prompt_copycat_git_info[stash]="${prompt_copycat_git_status[stashed]}"
+      prompt_simple_git_info[stash]="${prompt_simple_git_status[stashed]}"
     fi
 
     # Check whether branch is ahead (unpushed changes ahead of remote branch)
@@ -343,10 +343,10 @@ prompt_copycat_git() {
 
     # Check wheather branch has diverged (diverged changes with remote branch)
     if [[ "$is_ahead" == true && "$is_behind" == true ]]; then
-      prompt_copycat_git_info[upstream]="${No_behind}${prompt_copycat_git_status[diverged]}${No_ahead}"
+      prompt_simple_git_info[upstream]="${No_behind}${prompt_simple_git_status[diverged]}${No_ahead}"
     else
-      [[ "$is_ahead" == true ]] && prompt_copycat_git_info[upstream]="${No_ahead}${prompt_copycat_git_status[ahead]}"
-      [[ "$is_behind" == true ]] && prompt_copycat_git_info[upstream]="${No_behind}${prompt_copycat_git_status[behind]}"
+      [[ "$is_ahead" == true ]] && prompt_simple_git_info[upstream]="${No_ahead}${prompt_simple_git_status[ahead]}"
+      [[ "$is_behind" == true ]] && prompt_simple_git_info[upstream]="${No_behind}${prompt_simple_git_status[behind]}"
     fi
   fi
 
@@ -354,51 +354,51 @@ prompt_copycat_git() {
   local -a git_parts
 
   # Set Status
-  git_parts+="%F{$prompt_copycat_colors[git:branch]}${prompt_copycat_git_info[branch]}%f"
+  git_parts+="%F{$prompt_simple_colors[git:branch]}${prompt_simple_git_info[branch]}%f"
 
-  if [[ -n $prompt_copycat_git_info[status] ]]; then
-    git_parts+="%F{$prompt_copycat_colors[git:status]}${prompt_copycat_git_info[status]}%f"
+  if [[ -n $prompt_simple_git_info[status] ]]; then
+    git_parts+="%F{$prompt_simple_colors[git:status]}${prompt_simple_git_info[status]}%f"
   fi
 
-  if [[ -n $prompt_copycat_git_info[stash] ]]; then
-    git_parts+="%F{$prompt_copycat_colors[git:stash]}${prompt_copycat_git_info[stash]}%f"
+  if [[ -n $prompt_simple_git_info[stash] ]]; then
+    git_parts+="%F{$prompt_simple_colors[git:stash]}${prompt_simple_git_info[stash]}%f"
   fi
 
-  if [[ -n $prompt_copycat_git_info[upstream] ]]; then
-    git_parts+="%F{$prompt_copycat_colors[git:upstream]}${prompt_copycat_git_info[upstream]}%f"
+  if [[ -n $prompt_simple_git_info[upstream] ]]; then
+    git_parts+="%F{$prompt_simple_colors[git:upstream]}${prompt_simple_git_info[upstream]}%f"
   fi
 
   # Join parts, space separated.
-  prompt_copycat_git_parts=${(j. .)git_parts}
+  prompt_simple_git_parts=${(j. .)git_parts}
 
   # Show it
-  echo "${prompt_copycat_git_parts}"
+  echo "${prompt_simple_git_parts}"
 }
 
 #
 # Setup requirements for prompt.
 #
 
-prompt_copycat_precmd() {
+prompt_simple_precmd() {
   # Prevent percentage showing up if output doesn't end with a newline.
   export PROMPT_EOL_MARK=''
 
   prompt_opts=(subst percent)
 
   # Borrowed from `promptinit`. Sets the prompt options in case
-  # copycat was not initialized via `promptinit`.
+  # simple was not initialized via `promptinit`.
   setopt noprompt{bang,cr,percent,subst} "prompt${^prompt_opts[@]}"
 
  # Register the functions so that they are called at each prompt.
   autoload -Uz add-zsh-hook
   add-zsh-hook precmd prompt_newline_between_prompts
-  add-zsh-hook precmd prompt_copycat_update_title_remote
-  add-zsh-hook chpwd prompt_copycat_update_title_cwd
+  add-zsh-hook precmd prompt_simple_update_title_remote
+  add-zsh-hook chpwd prompt_simple_update_title_cwd
 
   # Since the function will run on _changing_ the dir
   # it won't run automatically at shell start so, run
   # it once now, to update:
-  prompt_copycat_update_title_cwd
+  prompt_simple_update_title_cwd
 
   # Print a message on SSH connection.
   if [[ -n "$SSH_CLIENT" ]]; then
@@ -408,14 +408,14 @@ prompt_copycat_precmd() {
     fi
 
     # SSH connection, print hostname and macOS version.
-    prompt_copycat_state_connection="Connected to $(scutil --get ComputerName)${OS_VERSION}"
-    echo "${prompt_copycat_state_connection}"
+    prompt_simple_state_connection="Connected to $(scutil --get ComputerName)${OS_VERSION}"
+    echo "${prompt_simple_state_connection}"
   fi
 
   # Get the nvm-controlled Node.js version.
-  prompt_copycat_nvm() {
+  prompt_simple_nvm() {
     which nvm &>/dev/null || return
-    local nvm_prompt="%F{$prompt_copycat_colors[prompt:nvmenv]}${$(nvm current)#v}%f"
+    local nvm_prompt="%F{$prompt_simple_colors[prompt:nvmenv]}${$(nvm current)#v}%f"
     echo "${nvm_prompt}"
   }
 
@@ -425,20 +425,20 @@ prompt_copycat_precmd() {
     local venv=''
     if [[ -n "$VIRTUAL_ENV" ]]; then
       # Strip out the path and just leave the env name.
-      venv="%F{$prompt_copycat_colors[prompt:virtualenv]}${VIRTUAL_ENV:t}%f"
+      venv="%F{$prompt_simple_colors[prompt:virtualenv]}${VIRTUAL_ENV:t}%f"
     fi
 
     [[ -n "$venv" ]] && echo "${venv} "
   }
-  prompt_copycat_virtualenv="\$(virtualenv_prompt_info)"
+  prompt_simple_virtualenv="\$(virtualenv_prompt_info)"
 
   # Disables prompt mangling in virtual_env/bin/activate
   export VIRTUAL_ENV_DISABLE_PROMPT=1
 }
 
-prompt_copycat_preprompt_render() {
+prompt_simple_preprompt_render() {
   # Load precmd
-  prompt_copycat_precmd
+  prompt_simple_precmd
 
   # Print a newline.
   if [[ -z $prompt_newline ]]; then
@@ -454,8 +454,8 @@ prompt_copycat_preprompt_render() {
   fi
 
   # Set the colors
-  typeset -gA prompt_copycat_colors_default prompt_copycat_colors
-  prompt_copycat_colors_default=(
+  typeset -gA prompt_simple_colors_default prompt_simple_colors
+  prompt_simple_colors_default=(
     git:branch           'default'
     git:stash            'default'
     git:status           'default'
@@ -470,37 +470,37 @@ prompt_copycat_preprompt_render() {
     user:root            'default'
     virtualenv           'default'
   )
-  prompt_copycat_colors=("${(@kv)prompt_copycat_colors_default}")
+  prompt_simple_colors=("${(@kv)prompt_simple_colors_default}")
 }
 
 #
 # Setup prompt
 #
 
-prompt_copycat_setup() {
+prompt_simple_setup() {
   # Load Pre-commands
-  [[ -z $prompt_copycat_preprompt_render ]] && prompt_copycat_preprompt_render
+  [[ -z $prompt_simple_preprompt_render ]] && prompt_simple_preprompt_render
 
   # Construct the new prompt.
   local -ah ps1_parts
 
   # Set the prompt string, turns red if the previous command didn't exit with 0.
-  local prompt_indicator='%(?.%F{$prompt_copycat_colors[prompt:default]}.%F{$prompt_copycat_colors[prompt:error]})❯%f '
-  prompt_copycat_render_path && ps1_parts=(
-                                          ${prompt_copycat_path}
+  local prompt_indicator='%(?.%F{$prompt_simple_colors[prompt:default]}.%F{$prompt_simple_colors[prompt:error]})❯%f '
+  prompt_simple_render_path && ps1_parts=(
+                                          ${prompt_simple_path}
                                           ${prompt_newline}
-                                          ${prompt_copycat_virtualenv}
+                                          ${prompt_simple_virtualenv}
                                           ${prompt_indicator}
                                        )
   PROMPT="${(j..)ps1_parts}"
 
   # Indicate continuation prompt.
-  PROMPT2='%F{$prompt_copycat_colors[prompt:continuation]}… %(1_.%_ .%_)%f'$prompt_indicator
+  PROMPT2='%F{$prompt_simple_colors[prompt:continuation]}… %(1_.%_ .%_)%f'$prompt_indicator
 
   # Store prompt expansion symbols for in-place expansion via (%). For
   # some reason it does not work without storing them in a variable first.
-  typeset -ga prompt_copycat_debug_depth
-  prompt_copycat_debug_depth=('%e' '%N' '%x')
+  typeset -ga prompt_simple_debug_depth
+  prompt_simple_debug_depth=('%e' '%N' '%x')
 
   # Compare is used to check if %N equals %x. When they differ, the main
   # prompt is used to allow displaying both filename and function. When
@@ -508,9 +508,9 @@ prompt_copycat_setup() {
   # information.
   local -A ps4_parts
   ps4_parts=(
-    depth     '%F{green}${(l:${(%)prompt_copycat_debug_depth[1]}::+:)}%f'
-    compare   '${${(%)prompt_copycat_debug_depth[2]}:#${(%)prompt_copycat_debug_depth[3]}}'
-    main      '%F{default}${${(%)prompt_copycat_debug_depth[3]}:t}%f:%F{green}%I%f @%F{default}%N%f:%F{green}%i%f '
+    depth     '%F{green}${(l:${(%)prompt_simple_debug_depth[1]}::+:)}%f'
+    compare   '${${(%)prompt_simple_debug_depth[2]}:#${(%)prompt_simple_debug_depth[3]}}'
+    main      '%F{default}${${(%)prompt_simple_debug_depth[3]}:t}%f:%F{green}%I%f @%F{default}%N%f:%F{green}%i%f '
     secondary '%F{default}%N%f%F{green}:%i%f '
     prompt    '%F{green}›%f '
   )
@@ -529,5 +529,5 @@ prompt_copycat_setup() {
   export SUDO_PROMPT=$(print -P "(%n@%m) Password:")
 }
 
-# Pass all arguments to the prompt_copycat_setup function.
-prompt_copycat_setup "$@"
+# Pass all arguments to the prompt_simple_setup function.
+prompt_simple_setup "$@"
