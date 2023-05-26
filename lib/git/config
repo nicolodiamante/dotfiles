@@ -30,7 +30,7 @@
   last = "log -1 HEAD --stat"
 
   # Push local repository online
-  po = push -u origin master
+  po = push -u origin main
 
   # View the current working tree status using the short format
   s = status -sb
