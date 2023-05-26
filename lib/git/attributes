@@ -58,9 +58,6 @@
 *.gradle          text diff=java
 *.gradle.kts      text diff=java
 
-# Docker
-Dockerfile        text
-
 # Documentation
 *.ipynb           text
 *.markdown        text
@@ -72,20 +69,6 @@ Dockerfile        text
 *.mdtxt           text
 *.mdtext          text
 *.txt             text
-AUTHORS           text
-CHANGELOG         text
-CHANGES           text
-CONTRIBUTING      text
-COPYING           text
-copyright         text
-*COPYRIGHT*       text
-INSTALL           text
-license           text
-LICENSE           text
-NEWS              text
-readme            text
-*README*          text
-TODO              text
 
 # Templates
 *.dot             text
@@ -108,22 +91,15 @@ TODO              text
 *.cnf             text
 *.conf            text
 *.config          text
-.editorconfig     text
-.env              text
-.gitattributes    text
-.gitconfig        text
-.htaccess         text
+*.editorconfig    text
+*.env             text
+*.gitattributes   text
+*.gitconfig       text
+*.htaccess        text
 *.lock            text -diff
-package-lock.json text -diff
 *.toml            text
 *.yaml            text
 *.yml             text
-browserslist      text
-Makefile          text
-makefile          text
-
-# Heroku
-Procfile          text
 
 # These files are binary and should be left untouched
 # (binary is a macro for -text -diff)

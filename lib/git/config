@@ -1,112 +1,39 @@
 #
-# git-config - Get and set repository or global options.
+# Get and set repositories or global options.
 #
 
 [alias]
-  # add all
-  aa = add --all
-
-  # add by patch - looks at each change, and asks if we want to put it in the repo.
-  ap = add --patch
-
-  # add just the files that are updated.
+  # Add just the files that are updated.
   au = add --update
 
-  # branch
-  br = branch
+  # Rewriting the most recent commit message
+  ca = "git commit --amend"
 
-  # branches list
-  brl = branch --list
-
-  # renamed branch
-  rbr = branch -m
-
-  # commit
-  ci = commit
-
-  # commit with a message
-  cm = git commit -a -m
+  # Create a new branch and switch in
+  cb = checkout -b
 
   # Switch branch
   co = checkout
 
-  # Create a new branch and switch in
-  cob = checkout -b
-
- # Merging only one file from a git branch (patching)
- # git checkout --patch [branch] [file.txt]
-  cop = checkout --patch
-
   # Show list of files in a conflict state
-  conf = !"git ls-files -u | awk '{print $4}' | sort -u"
-
-  # List contributors with number of commits
-  contributors = shortlog --summary --numbered
-
-  # pull if a merge can be resolved as a fast-forward, otherwise fail.
-  pf = pull --ff-only
-
-  # Git Pull While Ignoring Local Changes
-  # https://stackoverflow.com/questions/4157189/git-pull-while-ignoring-local-changes
-  ph = !git reset --hard && git pull
-
-  # When we use "git pull --rebase", git does a fetch then a rebase.
-  # A rebase resets the HEAD of your local branch to be the same as
-  # the remote HEAD, then replays your local commits back into repo.
-  # This means you don't get any noisy merge messages in your history.
-  # This gives us a linear history, and also helps with git bisect.
-  pr = pull --rebase
-
-  # View the current working tree status using the short format
-  ss = status -s
-
-  # Clone a repository including all submodules
-  c = clone --recursive
-
-  # Commit all changes
-  # https://stackoverflow.com/questions/4298960/git-add-and-commit-in-one-command
-  acp = !"git add -A && git commit -av && git push"
-
-  # Git tracks the remote branches locally and so you have to refresh your
-  # tracking list to be able to see the new remote branches run
-  fe = !git fetch && git fetch --dry-run
+  cs = !"git ls-files -u | awk '{print $4}' | sort -u"
 
   # View abbreviated SHA, description, and history graph of the latest 20 commits
-  graph = !"git log -n 20 --graph --oneline --pretty=format:'%C(green)%h%Creset «%s» by %an, %ar'"
+  g = !"git log -n 20 --graph --oneline --pretty=format:'%C(green)%h%Creset «%s» by %an, %ar'"
 
   # Show detail last commit
   # See: https://git-scm.com/docs/pretty-formats
   # See: https://git-scm.com/docs/git-commit-tree#_date_formats
-  # See: https://stackoverflow.com/questions/7853332/how-to-change-git-log-date-formats#7853670
-  hist = "!f() { git log -n 10 --oneline --pretty=format:'Last committed was %C(green)%h%Creset by %an (%ae)%nAbout %ar on %cd%nThe title was «%s» %n' --decorate --date=format:'%_d %B %Y at %H:%M UTC%z' --grep=$1; }; f"
+  h = "!f() { git log -n 10 --oneline --pretty=format:'Last committed was %C(green)%h%Creset by %an (%ae)%nAbout %ar on %cd%nThe title was «%s» %n' --decorate --date=format:'%_d %B %Y at %H:%M UTC%z' --grep=$1; }; f"
 
-  # Push
-  p = push
+  # Log stats
+  last = "log -1 HEAD --stat"
 
   # Push local repository online
-  ph = push -u origin master
+  po = push -u origin master
 
-  # Pull one file from a repo
-  pll = git pull origin
-
-  # Clone a repository including all submodules
-  cl = clone --recursive
-
-  # Resets the index and working tree. Any changes to tracked files in the
-  # working tree since <commit> are discarded.
-  re = reset --hard
-
-  # Restore all the files from Staging Area to the Working Area
-  restore = checkout --all
-
-  # Status
-  st = status
-
-  # Unstage
-  un = restore --staged
-
-  # Show changes of all the files
-  di = diff .
+  # View the current working tree status using the short format
+  s = status -sb
 
 [color]
   # Use colors in Git commands that are capable of colored output when

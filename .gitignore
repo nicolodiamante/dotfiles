@@ -12,7 +12,7 @@ user/*
 utils/opt/apple/*
 
 #
-# Except for these files
+# Except
 #
 
 !lib/ssh/config
