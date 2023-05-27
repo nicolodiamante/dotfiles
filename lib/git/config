@@ -12,14 +12,11 @@
   # Create a new branch and switch in
   cb = checkout -b
 
-  # Commit with credentials. # Use it with git cc "My message is awesome."
-  cc = "!f() { git -c \"user.name=$GIT_AUTH_NAME\" -c \"user.email=$GIT_AUTH_EMAIL\" -c \"user.signingkey=$GIT_AUTH_KEY\" commit -S -m \"$1\"; }; f"
-
   # Switch branch
   co = checkout
 
   # Commit with a message
-  cm = "!f() { git commit -am \"$1\" && git push; }; f"
+  cm = "!f() { git commit -am \"$1\" && git push -u origin main; }; f"
 
   # Show list of files in a conflict state
   cs = !"git ls-files -u | awk '{print $4}' | sort -u"
