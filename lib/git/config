@@ -12,11 +12,29 @@
   # Create a new branch and switch in
   cb = checkout -b
 
+  # Commit with credentials. # Use it with git cc "My message is awesome."
+  cc = "!f() { git -c \"user.name=$GIT_AUTH_NAME\" -c \"user.email=$GIT_AUTH_EMAIL\" -c \"user.signingkey=$GIT_AUTH_KEY\" commit -S -m \"$1\"; }; f"
+
   # Switch branch
   co = checkout
 
+  # Commit with a message
+  cm = "!f() { git commit -am \"$1\" && git push; }; f"
+
   # Show list of files in a conflict state
   cs = !"git ls-files -u | awk '{print $4}' | sort -u"
+
+  # Review previous commits. Enter `drop` to delete before your commit.
+  d = "!f() { git rebase -i HEAD~\"$1\"; }; f"
+
+  # Remove All Commits – Clear Git History (Local & Remote)
+  # 1. Checkout
+  # 2. Add all the files
+  # 3. Commit the changes
+  # 4. Delete the branch
+  # 5. Rename the current branch to `main`
+  # 6. Force update the repository
+  erase = "!f() { git checkout --orphan temp_branch && git add -A && git commit -am 'first commit' && git branch -D main && git branch -m main && git push -f origin main; }; f"
 
   # View abbreviated SHA, description, and history graph of the latest 20 commits
   g = !"git log -n 20 --graph --oneline --pretty=format:'%C(green)%h%Creset «%s» by %an, %ar'"
@@ -31,6 +49,9 @@
 
   # Push local repository online
   po = push -u origin main
+
+  # Git Revert Last Commit (preserve changes)
+  r = "!f() { git reset --soft HEAD~\"$1\"; }; f"
 
   # View the current working tree status using the short format
   s = status -sb

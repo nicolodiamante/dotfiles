@@ -8,8 +8,9 @@
 [[ "$OSTYPE" = darwin* ]] || exit 1
 
 # Resolve dotfiles root (from OS X 10.12 Sierra or later).
-OSVERS=$(sw_vers -buildVersion)
-if [[ "$OSVERS" > 16 ]]; then
+SW_VERS=$(sw_vers -buildVersion)
+OS_VERS=$(sed -E -e 's/([0-9]{2}).*/\1/' <<< "$SW_VERS")
+if [[ "$OS_VERS" -ge 16 ]]; then
   CLOUD_DOCS="${HOME}/Library/Mobile Documents/com~apple~CloudDocs"
 fi
 

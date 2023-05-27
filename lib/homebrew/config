@@ -9,6 +9,9 @@
 # Ref: https://docs.brew.sh/analytics
 export HOMEBREW_NO_ANALYTICS=1
 
+# Configure Homebrew to not delete old versions
+export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
+
 #
 # Aliases
 #
