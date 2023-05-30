@@ -5,4 +5,9 @@
 # MIT License
 #
 
-source <(curl -s https://raw.githubusercontent.com/nicolodiamante/simple/main/script/simple)
+simple_prompt=https://raw.githubusercontent.com/nicolodiamante/simple/main/script/simple
+if command -v curl &> /dev/null; then
+  source <(curl -s $simple_prompt)
+else
+  source <(wget -O - $simple_prompt)
+fi
