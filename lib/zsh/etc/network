@@ -42,6 +42,3 @@ alias netsetup='networksetup -listallhardwareports'
 
 # Run DNS leak test
 alias dnsleak='nslookup whoami.akamai.net'
-
-# Check internet speed
-alias speedtest='curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python -'

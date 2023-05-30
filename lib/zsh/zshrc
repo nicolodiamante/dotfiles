@@ -14,10 +14,10 @@ CLOUD_DOCS=$HOME/Library/Mobile\ Documents/com\~apple\~CloudDocs
 INIT=${CLOUD_DOCS:-$HOME}/dotfiles/lib/systemd/init
 [[ -r $INIT ]] && source ${INIT}
 
-# Loads all non-hidden regular startup files that zsh will read
-# commands from in collation order.
+# Loads all non-hidden regular startup files.
+# Read commands from in collation order.
 # See: https://bit.ly/3ceeB6F
-# Seee: https://zsh.sourceforge.io/Doc/Release/Expansion.html#Glob-Qualifiers
+# See: https://zsh.sourceforge.io/Doc/Release/Expansion.html#Glob-Qualifiers
 for startup_files ($LIB_DIR/zsh/etc/*(N.)); do
   [[ -r "$startup_files" ]] && source "${startup_files}"
 done

@@ -7,7 +7,8 @@
 lib/launchd/cleanup/
 lib/launchd/launchpad/
 lib/mackup/settings/
-lib/ssh/*
+lib/ssh/keys/*
+lib/ssh/known_hosts
 user/*
 utils/opt/apple/*
 
@@ -15,5 +16,6 @@ utils/opt/apple/*
 # Except
 #
 
+!lib/ssh/keys/.gitkeep
 !lib/ssh/config
 !utils/opt/apple/fonts

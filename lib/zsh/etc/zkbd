@@ -1,0 +1,29 @@
+#
+# System-wide keybindings for interactive zsh login shells.
+# See: http://zsh.sourceforge.net/Doc/Release/Zsh-Line-Editor.html#index-bindkey
+#
+
+# Use the default Emacs mode/keymap. This also links the `emacs` keymap
+# to `main` so that it is selected by default next time the editor starts.
+bindkey -e
+
+# Make sure the terminal is in application mode when the ZSH line
+# editor zle is active otherwise values from `$terminfo` are not valid.
+if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
+  autoload -Uz add-zle-hook-widget
+  function zle_application_mode_start { echoti smkx }
+  function zle_application_mode_stop { echoti rmkx }
+  add-zle-hook-widget -Uz zle-line-init zle_application_mode_start
+  add-zle-hook-widget -Uz zle-line-finish zle_application_mode_stop
+fi
+
+# Remove the slash, period, angle brackets and dash characters from the
+# default list. This allows to move backward and forward between words include
+# these characters or when trying to only delete until the next character,
+# e.g. for paths or dash-separated words.
+WORDCHARS='~!#$%^&*(){}[]<>?.+;-'
+MOTION_WORDCHARS='~!#$%^&*(){}[]<>?.+;-/'
+
+''{back,for}ward-word() WORDCHARS=$MOTION_WORDCHARS zle .$WIDGET
+zle -N backward-word
+zle -N forward-word

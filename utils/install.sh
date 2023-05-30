@@ -249,7 +249,7 @@ if [[ -d "$LAUNCHD_DIR" ]]; then
   end tell' && cd "${$HOME}"
 fi
 
-# user directory
+# User Credentials
 if [[ ! -d "${USER_DIR}" ]]; then
   mkdir -p "user" && cd "$_" && touch config &&
 cat << EOF >> "${USER_DIR}/config"
@@ -259,23 +259,32 @@ cat << EOF >> "${USER_DIR}/config"
 # do not want to commit to a public repository.
 #
 
-# Prevent people from accidentally committing under your name.
-GIT_USER=$(git config user.name)
-GIT_EMAIL=$(git config user.email)
-GIT_EDITOR=$(git config core.editor)
-GIT_BRANCH=$(git config init.defaultBranch)
+if (( $+commands[git] )); then
+  # Prevent people from accidentally committing my credentials.
+  GIT_USER=$(git config user.name)
+  GIT_EMAIL=$(git config user.email)
+  GIT_KEY=$(git config user.signingkey)
+  GIT_EDITOR=$(git config core.editor)
+  GIT_BRANCH=$(git config init.defaultBranch)
 
-if [[ -z "$GIT_USER" || -z "$GIT_EMAIL" || -z "$GIT_EDITOR" || -z "$GIT_BRANCH" ]]; then
-  # Your Git credential.
-  GIT_AUTH_NAME=""
-  GIT_AUTH_EMAIL=""
-  GIT_CORE_EDITOR=""
-  GIT_DEFAULT_BRANCH=""
+  if [[ -z "$GIT_USER" || -z "$GIT_EMAIL" || -z "$GIT_EDITOR" || -z "$GIT_BRANCH" || -z "$GIT_KEY" ]]; then
+    # Your Git credential.
+    GIT_AUTH_NAME=""
+    GIT_AUTH_EMAIL=""
+    GIT_AUTH_KEY=""
+    GIT_CORE_EDITOR=""
+    GIT_DEFAULT_BRANCH=""
 
-  [[ -n "$GIT_AUTH_NAME" ]] && git config --global user.name "${GIT_AUTH_NAME}"
-  [[ -n "$GIT_AUTH_EMAIL" ]] && git config --global user.email "${GIT_AUTH_EMAIL}"
-  [[ -n "$GIT_CORE_EDITOR" ]] && git config --global core.editor "${GIT_CORE_EDITOR}"
-  [[ -n "$GIT_DEFAULT_BRANCH" ]] && git config --global init.defaultBranch "${GIT_DEFAULT_BRANCH}"
+    [[ -n "$GIT_AUTH_NAME" ]] && git config --global user.name "${GIT_AUTH_NAME}"
+    [[ -n "$GIT_AUTH_EMAIL" ]] && git config --global user.email "${GIT_AUTH_EMAIL}"
+    [[ -n "$GIT_AUTH_KEY" ]] && git config --global user.signingkey "${GIT_AUTH_KEY}"
+    [[ -n "$GIT_CORE_EDITOR" ]] && git config --global core.editor "${GIT_CORE_EDITOR}"
+    [[ -n "$GIT_DEFAULT_BRANCH" ]] && git config --global init.defaultBranch "${GIT_DEFAULT_BRANCH}"
+  fi
+
+  # Git
+  alias g="git"
+fi
 EOF
 fi
 
@@ -301,9 +310,7 @@ done
 
 # Ask before potentially overwriting files.
 read -q "REPLY?macOS: update your macOS System Default.
-Before continuing, to make sure all changes will apply by going to:
-System Preferences > Security & Privacy and grant Full Disk Access to Terminal.
-Shall we proceed? (y/n) " -n 1;
+Before continuing, to ensure all changes apply, head to System Preferences > Security & Privacy, then grant Full Disk Access to Terminal. Ready to proceed? (y/n) " -n 1;
 echo "";
 if [[ $REPLY =~ ^[Yy]$ ]]; then
  source "${UTILS_DIR}/opt/macOS/sysprefs"
@@ -315,7 +322,7 @@ fi
 # Reboot OS.
 #
 
-read -q "REPLY?macOS: Done! Some of these changes require to reboot the system to take effect. Proceed? (y/n) " -n 1;
+read -q "REPLY?macOS: Done! Some of these changes require to reboot the system to take effect. Ready to proceed? (y/n) " -n 1;
 echo "";
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   osascript -e 'tell app "loginwindow" to «event aevtrrst»'
