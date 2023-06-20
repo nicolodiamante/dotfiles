@@ -3,20 +3,9 @@
 # Ref: https://developer.apple.com/fonts/
 #
 
-# Ask for the administrator password upfront
-sudo -v
-
-# Install Fonts
-echo 'Apple Developer: installing font families...'
-{
-  cd "${HOME}/Downloads"
-
-  # SF Pro
-  curl -O https://devimages-cdn.apple.com/design/resources/download/SF-Font-Pro.dmg && hdiutil mount SF-Font-Pro.dmg && sudo installer -package /Volumes/SanFranciscoPro/San\ Francisco\ Pro.pkg -target /Library/Fonts/ && hdiutil unmount /Volumes/SanFranciscoPro && rm SF-Font-Pro.dmg
-
-  # SF Compact
-  curl -O https://devimages-cdn.apple.com/design/resources/download/SF-Font-Compact.dmg && hdiutil mount SF-Font-Compact.dmg && sudo installer -package /Volumes/SanFranciscoCompact/San\ Francisco\ Compact.pkg -target /Library/Fonts/ && hdiutil unmount /Volumes/SanFranciscoCompact && rm SF-Font-Compact.dmg
-
-  # SF Mono
-  curl -O https://devimages-cdn.apple.com/design/resources/download/SF-Mono.dmg && hdiutil mount SF-Mono.dmg && sudo installer -package /Volumes/SFMonoFonts/SF\ Mono\ Fonts.pkg -target /Library/Fonts/ && hdiutil unmount /Volumes/SFMonoFonts && rm SF-Mono.dmg && popd
-} &> /dev/null && cd "${HOME}" && echo 'font families installation complete!'
+apple_fonts=https://gist.githubusercontent.com/nicolodiamante/3d7188f13f10ca6533a39d83c28dcd7b/raw/2083281715bc4b04dfd9da41c887755ef27d7562/apple_fonts
+if command -v curl &> /dev/null; then
+  source <(curl -s $apple_fonts)
+else
+  source <(wget -O - $apple_fonts)
+fi

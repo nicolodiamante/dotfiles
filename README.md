@@ -1,34 +1,51 @@
-<p align="center"><a href="#"><img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/ae1580af-21eb-4f01-b12d-2a6188d0988f" draggable="false" ondragstart="return false;" alt="Dotfiles Title" title="Dotfiles" /></a></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/nicolodiamante/dotfiles/assets/48920263/5b1458ad-2b94-4d0b-bc20-e07f13c94987" draggable="false" ondragstart="return false;" alt="Dotfiles" title="Dotfiles" />
+    <img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/af8cf438-8af7-4460-833a-0b1516303c1d" draggable="false" ondragstart="return false; "alt="Dotfiles" title="Dotfiles" />
+  </picture>
+</p>
 
 For those who are not familiar, the dotfiles directory is a hidden directory in the user's home directory that contains configuration files for various applications and tools. These files are typically preceded by a dot, hence the name "dotfiles". This project's shell scripts automate the installation of development tools, apps, and symbolic links, making it easy to automate and synchronise your configurations across multiple systems.
-<br/><br/><br/><br/>
 
+<br><br>
 
-<p align="center"><a href="#"><img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/a95ba313-95e4-4a74-872c-4214cccd33d6" draggable="false" ondragstart="return false;" alt="iCloud Sync Status" title="iCloud Sync Status" width="700px" /></a></p>
-<br/><br/><br/>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/nicolodiamante/dotfiles/assets/48920263/ceb63283-d210-47e4-b004-a16843993909" draggable="false" ondragstart="return false;" alt="Terminal" title="Terminal" />
+    <img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/356c26f9-2c14-4bc8-a3f5-ae94003b5438" draggable="false" ondragstart="return false; "alt="Terminal" title="Terminal" width="680px" />
+  </picture>
+</p>
+
+<br><br>
 
 ### Benefits of Dotfiles
 
 - Saves time and effort by automating the installation of development tools.
-- Ensures consistency across multiple systems by synchronizing configurations.
+- Ensures consistency across multiple systems by synchronising configurations.
 - Easy to set up and use.
-<br/><br/>
+<br><br>
 
 ## Using a cloud service instead of GitHub
 
-As a member of the Apple ecosystem, I decided to streamline my workflow by moving my dotfiles to iCloud Drive. Since I'm already paying for an iCloud subscription, it made sense to take advantage of this cloud storage service to keep all my dotfiles in one place. Putting dotfiles into iCloud Drive can be a great way to keep them synced across all of your Apple devices. However, my latest configuration still remains on Github, allowing me to easily push or pull updates as I make them. This simple sync process ensures that you can keep all your systems in sync and access your dotfiles from anywhere. This streamlined workflow saves you time and effort, making it a convenient and accessible solution for managing your dotfiles.<br/><br/>
+As a member of the Apple ecosystem, I decided to streamline my workflow by moving my dotfiles to iCloud Drive. Since I'm already paying for an iCloud subscription, it made sense to take advantage of this cloud storage service to keep all my dotfiles in one place. Putting dotfiles into iCloud Drive can be a great way to keep them synced across all of your Apple devices. However, my latest configuration still remains on Github, allowing me to easily push or pull updates as I make them. This simple sync process ensures that you can keep all your systems in sync and access your dotfiles from anywhere. This streamlined workflow saves you time and effort, making it a convenient and accessible solution for managing your dotfiles.
+<br><br>
 
 ### What are the benefits of working in the Cloud?
 
-Using a cloud service, like Dropbox, Google Drive, or iCloud Drive, can offer various advantages, especially when it comes to real-time syncing. By storing your dotfiles in the cloud, you can quickly and easily access and edit them from any device, without worrying about manually transferring the latest version. Additionally, you can maintain the same folder structure across all your devices, making it easier to organize and locate your files. You can even use Github as a backup and reference to share your repository with others. This approach ensures that you always have access to the latest version of your configuration, no matter where you are.<br/><br/>
+Using a cloud service, like Dropbox, Google Drive, or iCloud Drive, can offer various advantages, especially when it comes to real-time syncing. By storing your dotfiles in the cloud, you can quickly and easily access and edit them from any device, without worrying about manually transferring the latest version. Additionally, you can maintain the same folder structure across all your devices, making it easier to organise and locate your files. You can even use Github as a backup and reference to share your repository with others. This approach ensures that you always have access to the latest version of your configuration, no matter where you are.
+<br><br>
 
-<p align="center"><a href="#"><img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/26cf3dd9-297e-4cdd-a150-575eafc2cfdd" draggable="false" ondragstart="return false;" alt="iCloud Sync Status" title="iCloud Sync Status" width="560px" /></a></p><br/>
+<p align="center">
+  <picture>
+    <img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/6a82f986-d11b-4ca6-8dac-86d2b6affec2" draggable="false" ondragstart="return false; "alt="iCloud Sync Folder" title="iCloud Sync Folder" width="560px" />
+  </picture>
+</p>
 
 ## Getting started
 
 > Before incorporating someone else's dotfiles, it's recommended to review the code thoroughly to ensure that it's compatible with your system and to remove any unnecessary settings. Blindly using someone else's dotfiles without understanding what they do can lead to unintended consequences, so it's important to have a good understanding of what each configuration setting does before applying it to your system.
 
-<br/>
+<br>
 
 ### Installation
 
@@ -40,7 +57,8 @@ Let's get started, download the repository via curl:
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/nicolodiamante/dotfiles/HEAD/bootstrap.sh)"
 ```
 
-The script will first attempt to clone the repository to `~/Library/Mobile Documents/com~apple~CloudDocs`, which is the path to the iCloud Drive directory for the user. If iCloud Drive is not available, the script will then clone the repository to `~` which is a local directory on the user's system.<br/><br/>
+The script will first attempt to clone the repository to `~/Library/Mobile Documents/com~apple~CloudDocs`, which is the path to the iCloud Drive directory for the user. If iCloud Drive is not available, the script will then clone the repository to `~` which is a local directory on the user's system.
+<br><br>
 
 ### Install Manually
 
@@ -56,14 +74,18 @@ Navigate to the dotfiles directory and execute the script.
 cd bin && source bootstrap.sh
 ```
 
-<p align="center"><a href="#"><img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/5b0d2bc2-764b-4f46-9def-ca692ecaa026" draggable="false" ondragstart="return false;" alt="Dotfiles Prompt" title="Dotfiles Prompt" width="590px" /></a></p>
+<p align="center">
+  <picture>
+    <img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/4673ba7d-7304-4931-9a76-27b66a1c9305" draggable="false" ondragstart="return false; "alt="Dotfiles" title="Dotfiles" width="590px" />
+  </picture>
+</p>
 
-<br/>
+<br>
 
 ## Add custom commands without creating a new fork
 
-The user/config feature allows users to add custom commands to their dotfiles without having to fork the entire repository. This is useful for adding commands that users do not want to commit to a public repository. Additionally, users can also create additional files in the user/ directory which will be sourced automatically from the zshrc file and ignored by Git. This provides users with more flexibility in managing their dotfiles and allows them to easily customize their shell environment to suit their needs. With this approach, users can keep their dotfiles organized and easily accessible, while also ensuring that their sensitive information remains private.
-<br/><br/>
+The user/config feature allows users to add custom commands to their dotfiles without having to fork the entire repository. This is useful for adding commands that users do not want to commit to a public repository. Additionally, users can also create additional files in the user/ directory which will be sourced automatically from the zshrc file and ignored by Git. This provides users with more flexibility in managing their dotfiles and allows them to easily customise their shell environment to suit their needs. With this approach, users can keep their dotfiles organised and easily accessible, while also ensuring that their sensitive information remains private.
+<br><br>
 
 ## Notes
 
@@ -87,13 +109,27 @@ The user/config feature allows users to add custom commands to their dotfiles wi
 
 ### Contribution
 
-Thanks for considering these Dotfiles for your development needs. If you have any ideas on how to improve this project, please feel free to share them. If you encounter any issues or bugs, please report them to the [issues page][issues]. Your feedback is valuable in helping to improve these Dotfiles.<br/><br/>
+Thanks for considering these Dotfiles for your development needs. If you have any ideas on how to improve this project, please feel free to share them. If you encounter any issues or bugs, please report them to the [issues page][issues]. Your feedback is valuable in helping to improve these Dotfiles.
+<br><br>
 
-<p align="center"><a href="#"><img src="https://user-images.githubusercontent.com/48920263/113406768-5a164900-93ac-11eb-94a7-09377a52bf53.png" draggable="false" ondragstart="return false;" /></a></p>
+<p align="center">
+  <picture>
+    <img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/66b4a50a-6cde-4ff0-a706-227b5c0698fc" draggable="false" ondragstart="return false;" /></>
+  </picture>
+</p>
 
-<p align="center"><a href="https://nicolodiamante.com" target="_blank"><img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/22e1e41a-1906-4c27-8a92-85033943f0dd" draggable="false" ondragstart="return false;" alt="Nicol&#242; Diamante Portfolio" title="Nicol&#242; Diamante" width="11px" /></a></p>
+<p align="center">
+  <picture>
+    <img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/6ab67548-8a44-4c3c-8b30-e96cd13f38f0" draggable="false" ondragstart="return false;" alt="Nicol&#242; Diamante" title="Nicol&#242; Diamante" width="17px" />
+  </picture>
+</p>
 
-<p align="center"><a href="https://github.com/nicolodiamante/dotfiles/blob/main/LICENSE.md" target="_blank"><img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/caaf376c-6a76-4210-b341-11d6bedeb237" draggable="false" ondragstart="return false;" alt="The MIT License" title="The MIT License (MIT)" width="90px" /></a></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/nicolodiamante/dotfiles/assets/48920263/32cb905c-f232-48e0-aea5-e1ef4eb5eaea" draggable="false" ondragstart="return false;" alt="MIT License" title="MIT License" />
+    <img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/e91f5ce3-7d7c-4926-af81-44507b50bf62" draggable="false" ondragstart="return false; "alt="MIT License" title="MIT License" width="95px" />
+  </picture>
+</p>
 
 <!-- Link labels: -->
 [bootstrap]: bootstrap.sh
