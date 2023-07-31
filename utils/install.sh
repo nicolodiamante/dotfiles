@@ -74,10 +74,6 @@ fi
 
 # Install npm packages.
 if brew ls --versions node > /dev/null; then
-  # nvm
-  if brew ls --versions nvm > /dev/null; then
-    [[ ! -d "$XDG_CONFIG_HOME/nvm" ]] && mkdir -p "${XDG_CONFIG_HOME}/nvm"
-  fi
 
   # Nodejs.
   [[ ! -d "$XDG_CONFIG_HOME/node" ]] && mkdir -p "${XDG_CONFIG_HOME}/node"
@@ -200,7 +196,6 @@ if [[ -e "$CODE" ]]; then
   [[ ! -d "${CODE_USER}/configExtensions" ]] && \
   mkdir -p "${CODE_USER}/configExtensions"
 
-  ln -s "${CODE_CONFIG}/csscomb/csscomb.json" "${CODE_USER}/configExtensions"
   ln -s "${CODE_CONFIG}/prettier/prettierrc" "${CODE_USER}/configExtensions"
 
   # Install Visual Studio Code Extensions.

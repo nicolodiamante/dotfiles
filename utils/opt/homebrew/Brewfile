@@ -33,6 +33,7 @@ cask "adobe-creative-cloud"
 cask "discord"
 cask "figma"
 cask "miro"
+cask "slack"
 cask "tunnelbear"
 cask "visual-studio-code"
 
@@ -41,7 +42,6 @@ cask "visual-studio-code"
 #
 
 mas "AdGuard for Safari", id: 1440147259
-mas "Gifski", id: 1351639930
 mas "Grammarly for Safari", id: 1462114288
 mas "Keynote", id: 409183694
 mas "Magnet", id: 441258766

@@ -21,9 +21,13 @@ export NODE_REPL_HISTORY="${XDG_STATE_HOME:-$HOME/.local/state}/node/node_histor
 # Controls how many lines of history will be persisted if history is available.
 export NODE_REPL_HISTORY_SIZE=10000
 
-#
-# Aliases
-#
-
 # Start Node REPL.
-alias node='node "${NODE_REPL_START}"'
+node() {
+    if [[ "$#" -eq 0 ]]; then
+      command node
+    elif [[ "$1" == "-r" || "$1" == "--repl" ]]; then
+      "${NODE_REPL_START}"
+    else
+      command node "$@"
+    fi
+}

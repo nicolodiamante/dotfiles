@@ -3,19 +3,16 @@
 #
 
 extensions=(
-  gruntfuggly.activitusbar
   formulahendry.auto-close-tag
   formulahendry.auto-rename-tag
+  GitHub.github-vscode-theme
   mrmlnc.vscode-csscomb
   editorconfig.editorconfig
   eamodio.gitlens
   stormwarning.json-template
-  ritwickdey.liveserver
   davidanson.vscode-markdownlint
   esbenp.prettier-vscode
   medo64.render-crlf
-  damc.textpad-icon-theme
-  mateocerquetella.xcode-12-theme
 )
 for list in ${extensions}; do
   code --install-extension ${list}

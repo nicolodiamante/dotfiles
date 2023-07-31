@@ -19,11 +19,11 @@ export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
 # brew.
 alias b="brew"
 
-# Installs Homebrew Cask.
-alias bcask="brew install --cask"
-
 # Install Homebrew package.
 alias bi="brew install"
+
+# Installs Homebrew Cask.
+alias bic="brew install --cask"
 
 # List of all packages installed.
 alias bl='brew list -1'
