@@ -172,7 +172,7 @@
     "editor.formatOnSave": true,
     "editor.wordWrap": "on",
     "editor.acceptSuggestionOnEnter": "off",
-    "editor.defaultFormatter": "vscode.markdown-language-features"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[mdx]": {
     "editor.quickSuggestions": {
@@ -197,6 +197,8 @@
 
   // Integrated Terminal colors
   "workbench.colorCustomizations": {
+    "sideBar.background": "#0d1117",
+    "sideBarSectionHeader.background": "#0d1117",
     "editorRuler.foreground": "#30363d",
     "terminal.background": "#0d1117",
     "panel.background": "#0d1117"

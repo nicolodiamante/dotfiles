@@ -23,11 +23,11 @@ export NODE_REPL_HISTORY_SIZE=10000
 
 # Start Node REPL.
 node() {
-    if [[ "$#" -eq 0 ]]; then
-      command node
-    elif [[ "$1" == "-r" || "$1" == "--repl" ]]; then
-      "${NODE_REPL_START}"
-    else
-      command node "$@"
-    fi
+  if [[ "$#" -eq 0 ]]; then
+    command node
+  elif [[ "$1" == "-r" || "$1" == "--repl" ]]; then
+    "${NODE_REPL_START}"
+  else
+    command node "$@"
+  fi
 }
