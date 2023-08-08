@@ -1,13 +1,13 @@
-#!/bin/sh
+#!/bin/zsh
 
 #
 # Shell script to automate system tool setup for macOS.
 #
 
 # Uses the current script's directory, detect the OS, then loads…
-DOTFILES="${${(%):-%x}:h}"
-INIT="$DOTFILES/lib/systemd/init"
-[[ "$OSTYPE" = darwin* && -r "$INIT" ]] && source "$INIT" || exit 1
+SCRIPT_DIR="${${(%):-%x}:h}"
+INIT_SCRIPT="$SCRIPT_DIR/lib/systemd/init"
+[[ "$OSTYPE" = darwin* && -r "$INIT_SCRIPT" ]] && source "$INIT_SCRIPT" || exit 1
 
 #
 # Install.
@@ -24,20 +24,28 @@ fi
 
 # Check for Homebrew, else install.
 echo 'Checking for Homebrew...'
-if [[ -z `command -v brew` ]]; then
+if ! command -v brew >/dev/null 2>&1; then
   echo 'Brew is missing! Installing it...'
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
+    echo 'Brew installation failed. Exiting.'
+    exit 1
+  }
 fi
 
 # XDG Base Directory Specification.
-[[ ! -d "$XDG_CONFIG_HOME" ]] && mkdir -p "${XDG_CONFIG_HOME}"
-[[ ! -d "$XDG_DATA_HOME" ]] && mkdir -p "${XDG_DATA_HOME}"
-[[ ! -d "$XDG_STATE_HOME" ]] && mkdir -p "${XDG_STATE_HOME}"
-[[ ! -d "$XDG_CACHE_HOME" ]] && mkdir -p "${XDG_CACHE_HOME}"
+CONFIG_HOME="${XDG_CONFIG_HOME}"
+DATA_HOME="${XDG_DATA_HOME}"
+STATE_HOME="${XDG_STATE_HOME}"
+CACHE_HOME="${XDG_CACHE_HOME}"
+
+[[ ! -d "$CONFIG_HOME" ]] && mkdir -p "$CONFIG_HOME"
+[[ ! -d "$DATA_HOME" ]] && mkdir -p "$DATA_HOME"
+[[ ! -d "$STATE_HOME" ]] && mkdir -p "$STATE_HOME"
+[[ ! -d "$CACHE_HOME" ]] && mkdir -p "$CACHE_HOME"
 
 # Homebrew Bundle.
 echo 'Homebrew: installing binaries and other packages...'
-brew update && brew bundle --file=${UTILS_DIR}/opt/homebrew/Brewfile && brew cleanup
+brew update && brew bundle --file="${UTILS_DIR}/opt/homebrew/Brewfile" && brew cleanup
 
 #
 # Symlinks to the local config files.
@@ -46,47 +54,55 @@ brew update && brew bundle --file=${UTILS_DIR}/opt/homebrew/Brewfile && brew cle
 echo 'Symlinking all configurations...'
 
 # curlrc
-[[ ! -d "$XDG_CONFIG_HOME/curl" ]] && mkdir -p "${XDG_CONFIG_HOME}/curl"
-ln -s "${LIB_DIR}/curl/curlrc" "${XDG_CONFIG_HOME}/curl/.curlrc"
+if [[ ! -d "$XDG_CONFIG_HOME/curl" ]]; then
+  mkdir -p "${XDG_CONFIG_HOME}/curl"
+fi
+ln -sf "${LIB_DIR}/curl/curlrc" "${XDG_CONFIG_HOME}/curl/.curlrc"
 
 # nanorc
-[[ ! -d "$XDG_CONFIG_HOME/nano" ]] && mkdir -p "${XDG_CONFIG_HOME}/nano"
-ln -s "${LIB_DIR}/nano/nanorc" "${XDG_CONFIG_HOME}/nano"
+if [[ ! -d "$XDG_CONFIG_HOME/nano" ]]; then
+  mkdir -p "${XDG_CONFIG_HOME}/nano"
+fi
+ln -sf "${LIB_DIR}/nano/nanorc" "${XDG_CONFIG_HOME}/nano"
 
 # Zsh
 if brew ls --versions zsh > /dev/null; then
-  [[ ! -d "$XDG_STATE_HOME/zsh" ]] && mkdir -p "${XDG_STATE_HOME}/zsh"
-  [[ ! -d "$XDG_CONFIG_HOME/zsh" ]] && mkdir -p "${XDG_CONFIG_HOME}/zsh"
-  [[ ! -d "$XDG_CACHE_HOME/zsh" ]] && mkdir -p "${XDG_CACHE_HOME}/zsh"
+  if [[ ! -d "$XDG_STATE_HOME/zsh" ]]; then
+    mkdir -p "${XDG_STATE_HOME}/zsh"
+  fi
+  if [[ ! -d "$XDG_CONFIG_HOME/zsh" ]]; then
+    mkdir -p "${XDG_CONFIG_HOME}/zsh"
+  fi
+  if [[ ! -d "$XDG_CACHE_HOME/zsh" ]]; then
+    mkdir -p "${XDG_CACHE_HOME}/zsh"
+  fi
 
-  ln -s "${LIB_DIR}/zsh/zshenv" "${HOME}/.zshenv"
-  ln -s "${LIB_DIR}/zsh/zlogin" "${XDG_CONFIG_HOME}/zsh/.zlogin"
-  ln -s "${LIB_DIR}/zsh/zlogout" "${XDG_CONFIG_HOME}/zsh/.zlogout"
-  ln -s "${LIB_DIR}/zsh/zprofile" "${XDG_CONFIG_HOME}/zsh/.zprofile"
-  ln -s "${LIB_DIR}/zsh/zshrc" "${XDG_CONFIG_HOME}/zsh/.zshrc"
+  ln -sf "${LIB_DIR}/zsh/zshenv" "${HOME}/.zshenv"
+  ln -sf "${LIB_DIR}/zsh/zlogin" "${XDG_CONFIG_HOME}/zsh/.zlogin"
+  ln -sf "${LIB_DIR}/zsh/zlogout" "${XDG_CONFIG_HOME}/zsh/.zlogout"
+  ln -sf "${LIB_DIR}/zsh/zprofile" "${XDG_CONFIG_HOME}/zsh/.zprofile"
+  ln -sf "${LIB_DIR}/zsh/zshrc" "${XDG_CONFIG_HOME}/zsh/.zshrc"
 fi
 
 # Git
 if brew ls --versions git > /dev/null; then
-  [[ ! -d "$XDG_CONFIG_HOME/git" ]] && mkdir -p "${XDG_CONFIG_HOME}/git"
-  ln -s "${LIB_DIR}"/git/* "${XDG_CONFIG_HOME}/git"
+  if [[ ! -d "$XDG_CONFIG_HOME/git" ]]; then
+    mkdir -p "${XDG_CONFIG_HOME}/git"
+  fi
+  ln -sf "${LIB_DIR}/git/"* "${XDG_CONFIG_HOME}/git"
 fi
 
 # Install npm packages.
 if brew ls --versions node > /dev/null; then
-
   # Nodejs.
-  [[ ! -d "$XDG_CONFIG_HOME/node" ]] && mkdir -p "${XDG_CONFIG_HOME}/node"
-  [[ ! -d "$XDG_STATE_HOME/node" ]] && mkdir -p "${XDG_STATE_HOME}/node"
-  [[ ! -d "$XDG_CONFIG_HOME/npm" ]] && mkdir -p "${XDG_CONFIG_HOME}/npm"
-
-  if [[ -d "$LIB_DIR/npm" ]]; then
-    ln -s "${LIB_DIR}/npm/lib/npmrc" "${XDG_CONFIG_HOME}/npm"
+  if [[ ! -d "$XDG_CONFIG_HOME/node" ]]; then
+    mkdir -p "${XDG_CONFIG_HOME}/node"
+   if [[ ! -d "$XDG_STATE_HOME/node" ]]; then
+    mkdir -p "${XDG_STATE_HOME}/node"
   fi
-
-  # Start a new terminal session
-  # otherwise it will install the packages into `~/.npm` directory.
-  exec zsh -l && source "${UTILS_DIR}/opt/npm/packages"
+  if [[ ! -d "$XDG_CONFIG_HOME/npm" ]]; then
+    mkdir -p "${XDG_CONFIG_HOME}/npm"
+  fi
 fi
 
 # SSH
@@ -99,11 +115,11 @@ if [[ -d "$LIB_DIR/ssh" ]]; then
     select opt in "${opts[@]}"; do
       case $opt in
         "rm")
-            rm -r "${HOME}/.ssh" && break
+            rm -rf "${HOME}/.ssh" && break
             ;;
         "mv")
             [[ ! -d "$XDG_CONFIG_HOME/ssh" ]] && mkdir -p "${XDG_CONFIG_HOME}/ssh"
-            [[ ! -d "$XDG_CONFIG_HOME/ssh/ssh/keys" ]] && mkdir -p "${XDG_CONFIG_HOME}/ssh/keys"
+            [[ ! -d "$XDG_CONFIG_HOME/ssh/keys" ]] && mkdir -p "${XDG_CONFIG_HOME}/ssh/keys"
             [[ ! -d "$XDG_DATA_HOME/ssh" ]] && mkdir -p "${XDG_DATA_HOME}/ssh"
 
             mv -nv "${HOME}/.ssh/config" "${XDG_CONFIG_HOME}/ssh"
@@ -118,88 +134,58 @@ if [[ -d "$LIB_DIR/ssh" ]]; then
 
   [[ ! -d "$XDG_CONFIG_HOME/ssh" ]] && mkdir -p "${XDG_CONFIG_HOME}/ssh" && \
                                        mkdir -p "${XDG_CONFIG_HOME}/ssh/keys"
-  ln -s "${LIB_DIR}/ssh/config" "${XDG_CONFIG_HOME}/ssh"
+  ln -sf "${LIB_DIR}/ssh/config" "${XDG_CONFIG_HOME}/ssh"
 
   SSH_KEYS="${LIB_DIR}/ssh/keys"
-  if [ "$(ls -A $SSH_KEYS)" ]; then
-    ln -s "${SSH_KEYS}"/* "${HOME}/.config/ssh/keys"
+  if [ "$(ls -A "$SSH_KEYS")" ]; then
+    ln -sf "${SSH_KEYS}"/* "${HOME}/.config/ssh/keys"
   else
     echo "ln: ${LIB_DIR}/ssh/keys is empty!"
   fi
 
   # Correcting Permissions on the SSH Directory.
-  # Ensure that your account home directory, your ssh directory and file
-  # authorized_keys are not group-writable or world-writable. Recommended
-  # permissions for .ssh directory are 700. Recommended permissions for
-  # authorized_keys files are 600. This file must be readable and writable
-  # only by the user, and not accessible by others.
   # See: https://serverpilot.io/docs/how-to-use-ssh-public-key-authentication
-  osascript -e '
-  tell application "Terminal"
-
-    set textToType to "chmod 700 ${XDG_CONFIG_HOME}/ssh"
-
-    tell application "System Events"
-      (* Load the first job. *)
-      keystroke textToType
-
-      (* Wait a little bit to ensure that the job is loaded. *)
-      delay 0.5
-
-      keystroke return
-    end tell
-  end tell'
+  chmod 700 "${XDG_CONFIG_HOME}/ssh"
 
   [[ ! -d "$XDG_DATA_HOME/ssh" ]] && mkdir -p "${XDG_DATA_HOME}/ssh"
   if [[ -e "${LIB_DIR}/ssh/known_hosts" ]]; then
-    ln -s "${LIB_DIR}/ssh/known_hosts" "${XDG_DATA_HOME}/ssh"
+    ln -sf "${LIB_DIR}/ssh/known_hosts" "${XDG_DATA_HOME}/ssh"
   else
     touch "$LIB_DIR/ssh/know_hosts" && \
-    ln -s "${LIB_DIR}/ssh/known_hosts" "${XDG_DATA_HOME}/ssh" &&
+    ln -sf "${LIB_DIR}/ssh/known_hosts" "${XDG_DATA_HOME}/ssh"
 
-      osascript -e '
-      tell application "Terminal"
-
-        set textToType to "chmod 644 ${XDG_DATA_HOME}/ssh/known_hosts"
-
-        tell application "System Events"
-          (* Load the first job. *)
-          keystroke textToType
-
-          (* Wait a little bit to ensure that the job is loaded. *)
-          delay 0.5
-
-          keystroke return
-        end tell
-      end tell'
+    chmod 644 "${XDG_DATA_HOME}/ssh/known_hosts"
   fi
 fi
 
 # Visual Studio Code
-CODE=/Applications/Visual\ Studio\ Code.app
+CODE="/Applications/Visual Studio Code.app"
 CODE_USER="${HOME}/Library/Application Support/Code/User"
 CODE_CONFIG="${UTILS_DIR}/code"
 CODE_EXTENSIONS="${UTILS_DIR}/opt/code/extensions"
+
 if [[ -e "$CODE" ]]; then
   # Open the App to create the default directories.
   open "$CODE" && sleep 10 && osascript -e 'quit app "Visual Studio Code"'
 
   # User config
   for config in "${CODE_USER}"/{keybindings.json,settings.json}; do
-    [[ -f "$config" ]] && rm -rf "${config}"
+    if [[ -f "$config" ]]; then
+      rm -f "${config}"
+    fi
   done
 
-  ln -s "${CODE_CONFIG}/keybindings.json" "${CODE_USER}"
-  ln -s "${CODE_CONFIG}/settings.json" "${CODE_USER}"
+  ln -sf "${CODE_CONFIG}/keybindings.json" "${CODE_USER}"
+  ln -sf "${CODE_CONFIG}/settings.json" "${CODE_USER}"
 
   # Extensions
-  [[ ! -d "${CODE_USER}/configExtensions" ]] && \
-  mkdir -p "${CODE_USER}/configExtensions"
+  if [[ ! -d "${CODE_USER}/configExtensions" ]]; then
+    mkdir -p "${CODE_USER}/configExtensions"
+  fi
 
-  ln -s "${CODE_CONFIG}/prettier/prettierrc" "${CODE_USER}/configExtensions"
+  ln -sf "${CODE_CONFIG}/prettier/prettierrc" "${CODE_USER}/configExtensions"
 
   # Install Visual Studio Code Extensions.
-  CODE=/Applications/Visual\ Studio\ Code.app
   if [[ -e "$CODE_EXTENSIONS" ]]; then
     source "${UTILS_DIR}/opt/code/extensions"
   fi
@@ -209,45 +195,47 @@ fi
 # Ref: https://apple.co/2LhI2ub
 LAUNCHD_DIR="${LIB_DIR}/launchd"
 LAUNCHD_LIB="${HOME}/Library/LaunchAgents"
+
 if [[ -d "$LAUNCHD_DIR" ]]; then
-  [[ ! -d "$LAUNCHD_LIB" ]] && mkdir -p "${LAUNCHD_LIB}" &&
+  if [[ ! -d "$LAUNCHD_LIB" ]]; then
+    mkdir -p "${LAUNCHD_LIB}"
+  fi
 
-  [[ -d "$LAUNCHD_DIR/launchpad" ]] &&
-  ln -s "${LAUNCHD_DIR}/launchpad/com.shell.Launchpad.plist" "${LAUNCHD_LIB}"
+  if [[ -d "$LAUNCHD_DIR/launchpad" ]]; then
+    ln -sf "${LAUNCHD_DIR}/launchpad/com.shell.Launchpad.plist" "${LAUNCHD_LIB}"
+  fi
 
-  [[ -d "$LAUNCHD_DIR/updates" ]] &&
-  ln -s "${LAUNCHD_DIR}/updates/com.shell.Updates.plist" "${LAUNCHD_LIB}"
+  if [[ -d "$LAUNCHD_DIR/updates" ]]; then
+    ln -sf "${LAUNCHD_DIR}/updates/com.shell.Updates.plist" "${LAUNCHD_LIB}"
+  fi
 
-  cd "${HOME}/Library/LaunchAgents" && osascript -e '
+  cd "${HOME}/Library/LaunchAgents"
+
+  osascript -e '
   tell application "Terminal"
 
     set textToTypeOne to "launchctl load com.shell.Launchpad.plist"
     set textToTypeTwo to "launchctl load com.shell.Updates.plist"
 
     tell application "System Events"
-      (* Load the first job. *)
-      keystroke textToTypeOne
-
-      (* Wait a little bit to ensure that the job is loaded. *)
-      delay 0.5
-
-      keystroke return
-
-      (* Load the second job. *)
-      keystroke textToTypeTwo
-
-      (* Wait a little bit to ensure that the job is loaded. *)
-      delay 0.5
-
-      keystroke return
+      keystroke textToTypeOne & return & delay 0.5
+      keystroke textToTypeTwo & return & delay 0.5
     end tell
-  end tell' && cd "${$HOME}"
+  end tell'
+
+  cd "${HOME}"
 fi
 
 # User Credentials
 if [[ ! -d "${USER_DIR}" ]]; then
-  mkdir -p "user" && cd "$_" && touch config &&
-cat << EOF >> "${USER_DIR}/config"
+  mkdir -p "user" && cd "$_"
+
+  # Create the user configuration file.
+  user_config_file="${USER_DIR}/config"
+  touch "${user_config_file}"
+
+  # Add the content to the user configuration file.
+cat << EOF > "${user_config_file}"
 #
 # System-wide user shell configurations. This file will be sourced
 # along with the other files. You can use it to add commands you
@@ -283,9 +271,16 @@ fi
 EOF
 fi
 
+# Link the "editorconfig" file to home directory if it exists
+if [ -f "${UTILS_DIR}/opt/editorconfig/editorconfig" ]; then
+    ln -sf "${UTILS_DIR}/opt/editorconfig/editorconfig" "${HOME}/.editorconfig"
+else
+    echo "Unable to find the source file: ${UTILS_DIR}/opt/editorconfig/editorconfig"
+fi
+
 # hushlogin
-touch .hushlogin &&
-cat << EOF >> "${HOME}/.hushlogin"
+hushlogin_file="${HOME}/.hushlogin"
+cat << EOF > "${hushlogin_file}"
 #
 # The mere presence of this file in the home directory disables the
 # system copyright notice, the date and time of the last login, the
@@ -295,8 +290,10 @@ cat << EOF >> "${HOME}/.hushlogin"
 EOF
 
 # Apple Devs.
-for packages (${UTILS_DIR}/opt/apple/*(N.)); do
-  [[ -r "$packages" ]] && source "${packages}"
+for packages in "${UTILS_DIR}/opt/apple/"*; do
+  if [[ -r "${packages}" ]]; then
+    source "${packages}"
+  fi
 done
 
 #
@@ -305,10 +302,10 @@ done
 
 # Ask before potentially overwriting files.
 read -q "REPLY?macOS: update your macOS System Default.
-Before continuing, to ensure all changes apply, head to System Preferences > Security & Privacy, then grant Full Disk Access to Terminal. Ready to proceed? (y/n) " -n 1;
-echo "";
+Before continuing, to ensure all changes apply, head to System Preferences > Security & Privacy, then grant Full Disk Access to Terminal. Ready to proceed? (y/n) "
+echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
- source "${UTILS_DIR}/opt/macOS/sysprefs"
+  source "${UTILS_DIR}/opt/macOS/sysprefs"
 else
   echo 'macOS: settings update skipped!'
 fi
@@ -317,10 +314,10 @@ fi
 # Reboot OS.
 #
 
-read -q "REPLY?macOS: Done! Some of these changes require to reboot the system to take effect. Ready to proceed? (y/n) " -n 1;
-echo "";
+read -q "REPLY?macOS: Done! Some of these changes require a reboot to take effect. Proceed with reboot? (y/n) "
+echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   osascript -e 'tell app "loginwindow" to «event aevtrrst»'
 else
-  echo 'macOS: reboot OS aborted!'
+  echo 'macOS: Reboot aborted.'
 fi

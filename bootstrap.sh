@@ -1,16 +1,16 @@
-#!/bin/sh
+#!/bin/zsh
 
 #
 # Install dotfiles
 #
 
-# Detects the Operating System.
+# Exit if not MacOS
 [[ "$OSTYPE" = darwin* ]] || exit 1
 
-# Resolve dotfiles root (from OS X 10.12 Sierra or later).
-SW_VERS=$(sw_vers -buildVersion)
-OS_VERS=$(sed -E -e 's/([0-9]{2}).*/\1/' <<< "$SW_VERS")
-if [[ "$OS_VERS" -ge 16 ]]; then
+# Identify Operating System
+MACOS_BUILD=$(sw_vers -buildVersion)
+MACOS_VERSION=$(sed -E -e 's/([0-9]{2}).*/\1/' <<< "$MACOS_BUILD")
+if [[ "$MACOS_VERSION" -ge 16 ]]; then
   CLOUD_DOCS="${HOME}/Library/Mobile Documents/com~apple~CloudDocs"
 fi
 
@@ -22,11 +22,12 @@ TARBALL="${SOURCE}/tarball/master"
 TARGET="${DOTFILES_ROOT}"
 TAR_CMD="tar -xzv -C "${TARGET}" --strip-components 1 --exclude .gitignore"
 
+# Check if command is executable
 is_executable() {
   type "$1" > /dev/null 2>&1
 }
 
-# Checks if already installed otherwise installs.
+# Check if dotfiles already installed and proceed based on user input
 if [[ -d "$DOTFILES_ROOT" ]]; then
   read -q "REPLY?dotfiles already exist in ${DOTFILES_ROOT}. Proceed with the installation? (y/n) " -n 1;
   echo "";
@@ -34,7 +35,7 @@ if [[ -d "$DOTFILES_ROOT" ]]; then
     source "${INSTALL}"
   fi
 else
-  # Checks which executable is available then downloads and installs.
+  # Check which download method is available
   if is_executable "git"; then
     CMD="git clone ${SOURCE} ${TARGET}"
   elif is_executable "curl"; then

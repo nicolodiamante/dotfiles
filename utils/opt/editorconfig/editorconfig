@@ -1,0 +1,61 @@
+#
+# System-wide EditorConfig for consistent coding styles for multiple
+# developers working on the same project across various editors and IDEs.
+# See: https://EditorConfig.org
+#
+
+#
+# Base Configuration
+#
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+trim_trailing_whitespace = true
+
+#
+# Languages
+#
+
+[*.{html,css,less,scss]
+indent_style = space
+intent_size = 2
+
+[*.{md,markdown,gfm}]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+
+[*.{js,json}]
+indent_style = space
+indent_size = 2
+
+[{Gemfile, *.rb, *.erb, *.coffee}]
+indent_style = space
+indent_size = 2
+
+[{*.txt,wp-config-sample.php}]
+end_of_line = crlf
+
+[{*.php,*.py}]
+indent_style = space
+indent_size = 2
+
+[*.sh]
+indent_style = space
+indent_size = 2
+
+[*.sql]
+indent_size = 2
+
+[{*.yml,*.yaml,package.json}]
+indent_style = space
+indent_size = 2
