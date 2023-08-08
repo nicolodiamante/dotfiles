@@ -1,0 +1,41 @@
+#
+# Environment variables for npm.
+#
+
+# Load npm if command is available.
+(( $+commands[npm] )) || return
+
+# Set node env.
+export NPM_BIN=$"{XDG_CONFIG_HOME:-$HOME/.config}/node/node_modules/bin"
+export NPM_CONFIG_PREFIX="${XDG_CONFIG_HOME:-$HOME/.config}/node/node_modules"
+export NPM_PATH="${XDG_CONFIG_HOME:-$HOME/.config}/node/node_modules"
+export NPM_CONFIG_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/npm"
+
+# Try to load npm completion if command already available.
+npm_completion="${DOTFILES_ROOT}/lib/npm/lib/completion"
+[[ -r "$npm_completion" ]] && source "$npm_completion"
+
+#
+# Aliases
+#
+
+# Install dependencies globally
+alias nig="npm install -g "
+
+# Unistall dependencies globally
+alias nug="npm uninstall -g "
+
+# Check which npm modules are outdated
+alias no="npm outdated"
+
+# Check package versions
+alias nv="npm -v"
+
+# List packages
+alias nl="npm list"
+
+# List top-level installed packages
+alias nl0="npm list -g --depth 0"
+
+# Upgrade npm
+alias nul="npm install npm@latest -g"

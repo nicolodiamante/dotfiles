@@ -11,8 +11,8 @@ For those who are not familiar, the dotfiles directory is a hidden directory in 
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/nicolodiamante/dotfiles/assets/48920263/ceb63283-d210-47e4-b004-a16843993909" draggable="false" ondragstart="return false;" alt="Terminal" title="Terminal" />
-    <img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/356c26f9-2c14-4bc8-a3f5-ae94003b5438" draggable="false" ondragstart="return false; "alt="Terminal" title="Terminal" width="680px" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/nicolodiamante/dotfiles/assets/48920263/27a58ad2-e77e-4dc4-b059-5badc1467775" draggable="false" ondragstart="return false;" alt="Terminal" title="Terminal" />
+    <img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/70ce33dd-e9e1-4dbb-a040-2ed415530c13" draggable="false" ondragstart="return false; "alt="Terminal" title="Terminal" width="630px" />
   </picture>
 </p>
 
@@ -23,7 +23,7 @@ For those who are not familiar, the dotfiles directory is a hidden directory in 
 - Saves time and effort by automating the installation of development tools.
 - Ensures consistency across multiple systems by synchronising configurations.
 - Easy to set up and use.
-<br><br>
+  <br><br>
 
 ## Using a cloud service instead of GitHub
 
@@ -132,6 +132,7 @@ Thanks for considering these Dotfiles for your development needs. If you have an
 </p>
 
 <!-- Link labels: -->
+
 [bootstrap]: bootstrap.sh
 [brew]: https://brew.sh
 [npm]: https://www.npmjs.com

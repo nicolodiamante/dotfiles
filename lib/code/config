@@ -9,4 +9,4 @@
 #export VSCODE_PORTABLE="${$XDG_DATA_HOME}/vscode"
 
 # Prevents Visual Studio Code from storing extensions in the home directory.
-#export VSCODE_EXTENSIONS="${XDG_CACHE_HOME}/Code/extensions"
+#export VSCODE_EXTENSIONS="${XDG_DATA_HOME}/vscode"

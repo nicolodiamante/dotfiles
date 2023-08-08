@@ -113,7 +113,7 @@
   # Default editor for commit messages and other inputs
   # Even when EDITOR is set to something else
   # See: https://git-scm.com/book/en/v2/Appendix-C%3A-Git-Commands-Setup-and-Config#_core_editor
-	editor =
+	editor = code --wait
 
 [credential]
   helper = osxkeychain
@@ -182,6 +182,6 @@
   useConfigOnly = true
 
   # Credentials
-	name =
-	email =
-	signingkey =
+	name = Nicolò Diamante
+	email = hello@nicolodiamante.com
+	signingkey = 7D8D4DE3A827B34A
