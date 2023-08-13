@@ -6,10 +6,12 @@
 (( $+commands[npm] )) || return
 
 # Set node env.
-export NPM_BIN=$"{XDG_CONFIG_HOME:-$HOME/.config}/node/node_modules/bin"
+export NPM_BIN="${XDG_CONFIG_HOME:-$HOME/.config}/node/node_modules/bin"
 export NPM_CONFIG_PREFIX="${XDG_CONFIG_HOME:-$HOME/.config}/node/node_modules"
 export NPM_PATH="${XDG_CONFIG_HOME:-$HOME/.config}/node/node_modules"
 export NPM_CONFIG_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/npm"
+#export NPM_PACKAGES="${XDG_DATA_HOME:-$HOME/.local/share}/npm"
+#export NPM_CONFIG_USERCONFIG="${XDG_CONFIG_HOME:-$HOME/.config}/npm/npmrc"
 
 # Try to load npm completion if command already available.
 npm_completion="${DOTFILES_ROOT}/lib/npm/lib/completion"

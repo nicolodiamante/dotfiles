@@ -4,9 +4,9 @@
 #
 
 launch() {
-  COMMAND="${1}"
-  PLIST_FILE="${2}"
-  DIR_AGENTS="${HOME}/Library/LaunchAgents"
+  local COMMAND="${1}"
+  local PLIST_FILE="${2}"
+  local DIR_AGENTS="${HOME}/Library/LaunchAgents"
 
   # Show `help` message.
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
