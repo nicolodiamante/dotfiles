@@ -53,13 +53,13 @@ brew update && brew bundle --file="${UTILS_DIR}/opt/homebrew/Brewfile" && brew c
 
 echo 'Symlinking all configurations...'
 
-# curlrc
+# curl
 if [[ ! -d "$XDG_CONFIG_HOME/curl" ]]; then
   mkdir -p "${XDG_CONFIG_HOME}/curl"
 fi
 ln -sf "${LIB_DIR}/curl/curlrc" "${XDG_CONFIG_HOME}/curl/.curlrc"
 
-# nanorc
+# nano
 if [[ ! -d "$XDG_CONFIG_HOME/nano" ]]; then
   mkdir -p "${XDG_CONFIG_HOME}/nano"
 fi
@@ -89,6 +89,7 @@ if brew ls --versions git > /dev/null; then
   if [[ ! -d "$XDG_CONFIG_HOME/git" ]]; then
     mkdir -p "${XDG_CONFIG_HOME}/git"
   fi
+
   ln -sf "${LIB_DIR}/git/"* "${XDG_CONFIG_HOME}/git"
 fi
 
@@ -103,6 +104,18 @@ if brew ls --versions node > /dev/null; then
   if [[ ! -d "$XDG_CONFIG_HOME/npm" ]]; then
     mkdir -p "${XDG_CONFIG_HOME}/npm"
   fi
+fi
+
+# Tmux
+if brew ls --versions tmux > /dev/null; then
+  if [[ ! -d "$XDG_STATE_HOME/tmux" ]]; then
+    mkdir -p "${XDG_STATE_HOME}/tmux"
+  fi
+  if [[ ! -d "$XDG_CONFIG_HOME/tmux/plugins" ]]; then
+    mkdir -p "${XDG_CONFIG_HOME}/tmux/plugins"
+  fi
+
+  ln -sf "${LIB_DIR}/tmux/lib/tmux.conf" "${XDG_CONFIG_HOME}/tmux/tmux.conf"
 fi
 
 # SSH

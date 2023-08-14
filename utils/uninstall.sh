@@ -14,21 +14,21 @@ INIT="$DOTFILES/lib/systemd/init"
 #
 
 # Remove configurations
-for file in $HOME/.{hushlogin,zshenv}; do
+for file in "$HOME/editorconfig" "$HOME/.{hushlogin,zshenv}"; do
   [[ -f "$file" ]] && rm "$file"
 done
 
-for dir in $XDG_CONFIG_HOME/{curl,git,nano,node,npm,ssh,zsh} $XDG_DATA_HOME/{nvm,zsh}; do
+for dir in "$XDG_CONFIG_HOME/{curl,git,nano,node,npm,ssh,tmux,zsh}" "$XDG_DATA_HOME/{nvm,zsh}"; do
   [[ -d "$dir" ]] && rm -rf "$dir"
   echo "configurations symlinks removed."
 done
 
 # Remove editorconfig symlink
 if [ -L "${HOME}/.editorconfig" ]; then
-    rm "${HOME}/.editorconfig"
-    echo "editorconfig symlink removed."
+  rm "${HOME}/.editorconfig"
+  echo "editorconfig symlink removed."
 else
-    echo "No editorconfig symlink found in the home directory."
+  echo "No editorconfig symlink found in the home directory."
 fi
 
 LAUNCHD_LIB=$HOME/Library/LaunchAgents
@@ -43,7 +43,6 @@ fi
 # Unload and remove VSCode configs
 CODE=/Applications/Visual\ Studio\ Code.app
 CODE_USER="$HOME/Library/Application Support/Code/User"
-CODE_CONFIG=${CODE_CONFIG=${PREFS_DIR}/code/config
 if [[ -d "$CODE" ]]; then
   for config in "$CODE_USER"/{keybindings.json,settings.json}; do
     [[ -f "$config" ]] && rm "$config"

@@ -1,0 +1,37 @@
+#
+# Environment variables for tmux.
+#
+
+# Load tmux if command is available.
+(( $+commands[tmux] )) || return
+
+#
+# Aliases
+#
+
+# Stat session.
+alias t="tmux"
+
+# Kill session [session].
+alias tkill="tmux kill-session -t"
+
+# Kill all sessions but the current.
+alias tka="tmux kill-session -a"
+
+# Kill all sessions but [session].
+alias tkat="tmux kill-session -a -t"
+
+# Start a new session.
+alias tns="tmux new-session"
+
+# Attach to last session.
+alias ta="tmux attach"
+
+# Attach to a session with the name [session].
+alias tat="tmux attach-session -t mysession"
+
+# Show all sessions.
+alias tls="tmux list-sessions"
+
+# Switch sessions [target-session]
+alias ts="tmux switch -t"
