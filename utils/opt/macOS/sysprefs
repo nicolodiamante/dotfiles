@@ -185,19 +185,6 @@ defaults write com.apple.screencapture disable-shadow -bool true
 # Don’t group windows by application in Mission Control
 defaults write com.apple.dock expose-group-by-app -bool false
 
-#
-# Time Machine
-#
-
-# Prevent Time Machine from prompting to use new hard drives as backup volume
-defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
-
-# Disable time machine selection on new hotplug
-#defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool YES
-
-# Allow unsupported devices
-#defaults write com.apple.systempreferences TMShowUnsupportedNetworkVolumes -bool YES
-
 # Auto backup
 #defaults write com.apple.TimeMachine AutoBackup =1
 
@@ -247,7 +234,7 @@ defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSTextShowsControlCharacters -bool true
 
 #
-# Safari and WebKit
+# WebKit
 #
 
 # Prevent Safari from opening ‘safe’ files automatically after downloading
@@ -270,8 +257,8 @@ defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true
 # AutoFill
 defaults write com.apple.Safari AutoFillFromAddressBook -bool true
 defaults write com.apple.Safari AutoFillPasswords -bool true
-defaults write com.apple.Safari AutoFillCreditCardData -bool true
-defaults write com.apple.Safari AutoFillMiscellaneousForms -bool true
+defaults write com.apple.Safari AutoFillCreditCardData -bool false
+defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false
 
 # Warn about fraudulent websites
 defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
@@ -340,12 +327,14 @@ defaults write com.apple.dock show-recents -bool false
 # Wipe all default icons from the Dock then add and reorders the new ones
 defaults write com.apple.dock persistent-apps -array
 
-# System Preferences
-defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/System Preferences.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-# Safari
-defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Safari.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# Google Chrome
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Google Chrome.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
 # Mail
 defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Mail.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# Slack
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Slack.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# Discord
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Discord.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
 # Calendar
 defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Calendar.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
 # Reminders
@@ -354,10 +343,12 @@ defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</
 defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Notes.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
 # Calculator
 defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Calculator.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
-# Figma
-defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Figma.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
 # Visual Studio Code
 defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Visual Studio Code.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# Miro
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Miro.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
+# Figma
+defaults write com.apple.dock persistent-apps -array-add '<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Figma.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>'
 
 #
 # TextEdit

@@ -32,6 +32,7 @@ brew "zsh-completions"
 cask "adobe-creative-cloud"
 cask "discord"
 cask "figma"
+cask "google-chrome"
 cask "miro"
 cask "protonvpn"
 cask "slack"
@@ -41,10 +42,7 @@ cask "visual-studio-code"
 # 'mas install'
 #
 
-mas "AdGuard for Safari", id: 1440147259
-mas "Grammarly for Safari", id: 1462114288
-mas "Keynote", id: 409183694
+mas "Data Jar", id: 1453273600
+mas "Gifski", id:  1351639930
 mas "Magnet", id: 441258766
-mas "Numbers", id: 409203825
-mas "Pages", id: 409201541
 mas "TestFlight", id:899247664
