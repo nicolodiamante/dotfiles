@@ -205,38 +205,26 @@ if [[ -e "$CODE" ]]; then
 fi
 
 # Launch Agents
-# Ref: https://apple.co/2LhI2ub
 LAUNCHD_DIR="${LIB_DIR}/launchd"
-LAUNCHD_LIB="${HOME}/Library/LaunchAgents"
+LAUNCH_AGENTS="${HOME}/Library/LaunchAgents"
+LAUNCH_DAEMONS="/Library/LaunchDaemons"
 
 if [[ -d "$LAUNCHD_DIR" ]]; then
-  if [[ ! -d "$LAUNCHD_LIB" ]]; then
-    mkdir -p "${LAUNCHD_LIB}"
-  fi
-
-  if [[ -d "$LAUNCHD_DIR/launchpad" ]]; then
-    ln -sf "${LAUNCHD_DIR}/launchpad/com.shell.Launchpad.plist" "${LAUNCHD_LIB}"
+  if [[ ! -d "$LAUNCH_AGENTS" ]]; then
+    mkdir -p "${LAUNCH_AGENTS}"
   fi
 
   if [[ -d "$LAUNCHD_DIR/updates" ]]; then
-    ln -sf "${LAUNCHD_DIR}/updates/com.shell.Updates.plist" "${LAUNCHD_LIB}"
+    ln -sf "${LAUNCHD_DIR}/updates/com.shell.Updates.plist" "${LAUNCH_AGENTS}"
+    launchctl load "${LAUNCH_AGENTS}/com.shell.Updates.plist"
   fi
 
-  cd "${HOME}/Library/LaunchAgents"
+  if [[ -d "$LAUNCHD_DIR/launchpad" ]]; then
+    ln -sf "${LAUNCHD_DIR}/launchpad/com.shell.Launchpad.plist" "${LAUNCH_DAEMONS}"
+  fi
 
-  osascript -e '
-  tell application "Terminal"
-
-    set textToTypeOne to "launchctl load com.shell.Launchpad.plist"
-    set textToTypeTwo to "launchctl load com.shell.Updates.plist"
-
-    tell application "System Events"
-      keystroke textToTypeOne & return & delay 0.5
-      keystroke textToTypeTwo & return & delay 0.5
-    end tell
-  end tell'
-
-  cd "${HOME}"
+  # Change owner to root then load the plist
+  sudo chown root:wheel "${LAUNCH_DAEMONS}/com.shell.Launchpad.plist" && sudo launchctl load -w "${LAUNCH_DAEMONS}/com.shell.Launchpad.plist"
 fi
 
 # User Credentials

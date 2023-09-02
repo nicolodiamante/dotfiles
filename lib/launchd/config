@@ -15,7 +15,7 @@ Usage: launch subcommand [arguments ...]
 System wide and per-user daemon/agent manager
 
   -d, --dir       per-user agents provided by the user
-  -l, --list      list all of the jobs loaded into launchd
+  -l, --list      show all running launchctl daemons/agents
 
   -L, --load      load the specified configuration file
   -R, --reload    force the unloading and loading of the plist
@@ -36,7 +36,7 @@ EOF
   if [[ "$COMMAND" == "-d" || "$COMMAND" == "--dir" ]]; then
      cd "${DIR_AGENTS}"
   elif [[ "$COMMAND" == "-l" || "$COMMAND" == "--list" ]]; then
-    launchctl list
+    sudo launchctl list
   elif [[ "$COMMAND" == "-R" || "$COMMAND" == "--reload" && -n "$PLIST_FILE" ]]; then
     cd "${DIR_AGENTS}" && echo "reloading ${PLIST_FILE}"
     launchctl unload ${PLIST_FILE} && launchctl load ${PLIST_FILE} && \

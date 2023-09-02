@@ -31,13 +31,21 @@ else
   echo "No editorconfig symlink found in the home directory."
 fi
 
-LAUNCHD_LIB=$HOME/Library/LaunchAgents
-if [[ -n $(ls -A $LAUNCHD_LIB) ]]; then
-  cd $LAUNCHD_LIB
-  for plist in com.shell.Launchpad.plist com.shell.Updates.plist; do
-    launchctl unload $plist
-  done
-  cd $HOME
+# Uninstall Launch Agents and Unload .plist files
+LAUNCHD_DIR="${LIB_DIR}/launchd"
+LAUNCH_AGENTS="${HOME}/Library/LaunchAgents"
+LAUNCH_DAEMONS="/Library/LaunchDaemons"
+
+if [[ -d "$LAUNCHD_DIR" ]]; then
+  if [[ -d "$LAUNCHD_DIR/updates" ]]; then
+    launchctl unload "${LAUNCH_AGENTS}/com.shell.Updates.plist"
+    rm "${LAUNCH_AGENTS}/com.shell.Updates.plist"
+  fi
+
+  if [[ -d "$LAUNCHD_DIR/launchpad" ]]; then
+    sudo launchctl unload -w "${LAUNCH_DAEMONS}/com.shell.Launchpad.plist"
+    sudo rm "${LAUNCH_DAEMONS}/com.shell.Launchpad.plist"
+  fi
 fi
 
 # Unload and remove VSCode configs
