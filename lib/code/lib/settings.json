@@ -28,7 +28,7 @@
   "window.title": "${activeEditorShort}${separator}${rootName}",
   "window.titleBarStyle": "native",
   "window.nativeTabs": true,
-  "window.zoomLevel": -0.24, // -0.499
+  "window.zoomLevel": -0.248,
   "editor.insertSpaces": true,
   "editor.scrollBeyondLastLine": false,
   "editor.padding.bottom": 644,
@@ -142,58 +142,13 @@
   "editor.formatOnPaste": false,
   "prettier.printWidth": 120,
 
-  // Language Scopes
-  "[css]": {
-    "editor.formatOnSave": true,
-    "editor.renderWhitespace": "all",
-    "editor.defaultFormatter": "mrmlnc.vscode-csscomb"
-  },
-  "[less]": {
-    "editor.formatOnSave": true,
-    "editor.renderWhitespace": "all",
-    "editor.defaultFormatter": "mrmlnc.vscode-csscomb"
-  },
-  "[sass]": {
-    "editor.formatOnSave": true,
-    "editor.renderWhitespace": "all",
-    "editor.defaultFormatter": "mrmlnc.vscode-csscomb"
-  },
-  "[scss]": {
-    "editor.formatOnSave": true,
-    "editor.renderWhitespace": "all",
-    "editor.defaultFormatter": "mrmlnc.vscode-csscomb"
-  },
-  "[markdown]": {
-    "editor.quickSuggestions": {
-      "comments": "off",
-      "strings": "off",
-      "other": "off"
-    },
-    "editor.formatOnSave": true,
-    "editor.wordWrap": "on",
-    "editor.acceptSuggestionOnEnter": "off",
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[mdx]": {
-    "editor.quickSuggestions": {
-      "comments": "off",
-      "strings": "off",
-      "other": "off"
-    },
-    "editor.wordWrap": "on"
-  },
-  "[typescript]": {
-    "editor.formatOnSave": true,
-    "editor.formatOnPaste": true
-  },
-
-  // GitLens
-  //"gitlens.mode.active": "zen",
+  // GitLens\
   "editor.codeLens": false,
   "gitlens.codeLens.enabled": false,
   "gitlens.codeLens.recentChange.enabled": false,
   "gitlens.codeLens.authors.enabled": false,
   "gitlens.currentLine.enabled": false,
+  //"gitlens.mode.active": "zen",
 
   // Integrated Terminal colors
   "workbench.colorCustomizations": {

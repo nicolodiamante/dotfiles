@@ -16,6 +16,7 @@ System wide and per-user daemon/agent manager
 
   -d, --dir       per-user agents provided by the user
   -l, --list      show all running launchctl daemons/agents
+  -g, --grep      show only the specified launchctl daemons/agents
 
   -L, --load      load the specified configuration file
   -R, --reload    force the unloading and loading of the plist
@@ -37,6 +38,8 @@ EOF
      cd "${DIR_AGENTS}"
   elif [[ "$COMMAND" == "-l" || "$COMMAND" == "--list" ]]; then
     sudo launchctl list
+  elif [[ "$COMMAND" == "-g" || "$COMMAND" == "--grep" && -n "$PLIST_FILE" ]]; then
+    launchctl list | grep ${PLIST_FILE}
   elif [[ "$COMMAND" == "-R" || "$COMMAND" == "--reload" && -n "$PLIST_FILE" ]]; then
     cd "${DIR_AGENTS}" && echo "reloading ${PLIST_FILE}"
     launchctl unload ${PLIST_FILE} && launchctl load ${PLIST_FILE} && \

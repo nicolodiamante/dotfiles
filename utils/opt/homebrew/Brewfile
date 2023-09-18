@@ -34,7 +34,6 @@ cask "discord"
 cask "figma"
 cask "google-chrome"
 cask "grammarly-desktop"
-cask "miro"
 cask "protonvpn"
 cask "slack"
 cask "visual-studio-code"
@@ -43,7 +42,8 @@ cask "visual-studio-code"
 # 'mas install'
 #
 
+mas "AdGuard for Safari", id: 1440147259
+mas "Grammarly for Safari", id: 1462114288
 mas "Data Jar", id: 1453273600
-mas "Gifski", id:  1351639930
 mas "Magnet", id: 441258766
 mas "TestFlight", id:899247664
