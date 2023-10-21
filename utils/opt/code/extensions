@@ -3,6 +3,7 @@
 #
 
 extensions=(
+  Codeium.codeium
   formulahendry.auto-close-tag
   formulahendry.auto-rename-tag
   GitHub.github-vscode-theme
