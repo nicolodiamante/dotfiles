@@ -32,8 +32,8 @@ fi
 
 # Load all the user configurations.
 # Iterate over all the files in the current directory
-# and its (grand-)*children except *.scpt.
-for usr_files ($USER_DIR/**/^*.scpt(N.||@:t)); do
+# and its (grand-)*children except *.scpt and ssc.
+for usr_files ($USER_DIR/**/^(*.scpt|ssc)(N.||@:t)); do
   [[ -r "$usr_files" ]] && source "${usr_files}"
 done
 

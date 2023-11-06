@@ -7,7 +7,7 @@
   au = add --update
 
   # Rewriting the most recent commit message
-  ca = "git commit --amend"
+  ca = "commit --amend"
 
   # Create a new branch and switch in
   cb = checkout -b
@@ -23,6 +23,10 @@
 
   # Review previous commits. Enter `drop` to delete before your commit.
   d = "!f() { git rebase -i HEAD~\"$1\"; }; f"
+
+  # Change the remote's URL from SSH to HTTPS.
+  # See: https://docs.github.com/en/get-started/getting-started-with-git/managing-remote-repositories
+  er = "!f() { git remote set-url origin \"$1\"; }; f"
 
   # Remove All Commits – Clear Git History (Local & Remote)
   # 1. Checkout

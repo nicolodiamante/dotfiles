@@ -4,8 +4,8 @@
 
 *.swp
 .DS_Store
-lib/launchd/cleanup/
-lib/launchd/launchpad/
+lib/launchd/norflow/
+lib/launchd/prune/
 lib/mackup/settings/
 lib/ssh/keys/*
 lib/ssh/known_hosts
