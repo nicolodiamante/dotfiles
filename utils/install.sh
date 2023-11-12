@@ -4,10 +4,23 @@
 # Shell script to automate system tool setup for macOS.
 #
 
-# Uses the current script's directory, detect the OS, then loads…
+# Exit if not macOS or if the initialization script is not available.
 SCRIPT_DIR="${${(%):-%x}:h}"
 INIT_SCRIPT="$SCRIPT_DIR/lib/systemd/init"
-[[ "$OSTYPE" = darwin* && -r "$INIT_SCRIPT" ]] && source "$INIT_SCRIPT" || exit 1
+if [[ "$OSTYPE" != "darwin"* ]] || [[ ! -r "$INIT_SCRIPT" ]]; then
+  echo "This script is only for macOS and requires the init script at ${INIT_SCRIPT}" >&2
+  exit 1
+fi
+source "$INIT_SCRIPT"
+
+# Confirmations at the start.
+echo "This script will install and configure tools and settings on your macOS."
+read -q "REPLY?Have you backed up your system and do you wish to proceed? [y/N] "
+echo ""
+if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
+  echo "Installation aborted by the user."
+  exit 0
+fi
 
 #
 # Install.
@@ -22,14 +35,26 @@ else
   xcode-select --install
 fi
 
-# Check for Homebrew, else install.
+# Check for Homebrew, else ask to install.
 echo 'Checking for Homebrew...'
-if ! command -v brew >/dev/null 2>&1; then
-  echo 'Brew is missing! Installing it...'
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || {
-    echo 'Brew installation failed. Exiting.'
+if ! command -v brew &>/dev/null; then
+  echo 'Homebrew not found. Required for dotfiles installation.' >&2
+  read -q "REPLY?Do you want to install Homebrew? [y/N] "
+  echo ""
+  if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+    echo 'Installing Homebrew...'
+    if ! /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"; then
+      echo "Failed to install Homebrew." >&2
+      exit 1
+    fi
+    echo 'Updating Homebrew...'
+    brew update
+  else
+    echo "Homebrew installation aborted by the user. Homebrew is essential for dotfiles setup." >&2
     exit 1
-  }
+  fi
+else
+  echo 'Homebrew is already installed.'
 fi
 
 # XDG Base Directory Specification.
@@ -118,7 +143,19 @@ if brew ls --versions tmux > /dev/null; then
   ln -sf "${LIB_DIR}/tmux/lib/tmux.conf" "${XDG_CONFIG_HOME}/tmux/tmux.conf"
 fi
 
-# SSH
+# SSH Configuration Backup.
+SSH_DIR="${HOME}/.ssh"
+SSH_BACKUP_DIR="${HOME}/ssh_backup_$(date +"%Y%m%d_%H%M%S")"
+
+if [[ -d "$SSH_DIR" ]]; then
+  echo "Backing up existing SSH directory to $SSH_BACKUP_DIR..."
+  cp -R "$SSH_DIR" "$SSH_BACKUP_DIR" && echo "Backup successful." || {
+    echo "Error creating SSH backup. Aborting." >&2
+    exit 1
+  }
+fi
+
+# SSH Configuration Setup.
 # See: https://bit.ly/2VK3nlm
 # See: https://bit.ly/3lOMwIS
 if [[ -d "$LIB_DIR/ssh" ]]; then
@@ -171,7 +208,7 @@ if [[ -d "$LIB_DIR/ssh" ]]; then
   fi
 fi
 
-# Visual Studio Code
+# Visual Studio Code.
 CODE="/Applications/Visual Studio Code.app"
 CODE_USER="${HOME}/Library/Application Support/Code/User"
 CODE_CONFIG="${UTILS_DIR}/code"
@@ -214,17 +251,20 @@ if [[ -d "$LAUNCHD_DIR" ]]; then
     mkdir -p "${LAUNCH_AGENTS}"
   fi
 
+  if [[ -d "$LAUNCHD_DIR/norflow" ]]; then
+    ln -sf "${LAUNCHD_DIR}/norflow/com.shell.Norflow.plist" "${LAUNCH_DAEMONS}"
+    launchctl load "${LAUNCH_AGENTS}/com.shell.Norflow.plist"
+  fi
+
+  if [[ -d "$LAUNCHD_DIR/prune" ]]; then
+    ln -sf "${LAUNCHD_DIR}/prune/com.shell.Prune.plist" "${LAUNCH_DAEMONS}"
+    launchctl load "${LAUNCH_AGENTS}/com.shell.Prune.plist"
+  fi
+
   if [[ -d "$LAUNCHD_DIR/updates" ]]; then
     ln -sf "${LAUNCHD_DIR}/updates/com.shell.Updates.plist" "${LAUNCH_AGENTS}"
     launchctl load "${LAUNCH_AGENTS}/com.shell.Updates.plist"
   fi
-
-  if [[ -d "$LAUNCHD_DIR/launchpad" ]]; then
-    ln -sf "${LAUNCHD_DIR}/launchpad/com.shell.Launchpad.plist" "${LAUNCH_DAEMONS}"
-  fi
-
-  # Change owner to root then load the plist
-  sudo chown root:wheel "${LAUNCH_DAEMONS}/com.shell.Launchpad.plist" && sudo launchctl load -w "${LAUNCH_DAEMONS}/com.shell.Launchpad.plist"
 fi
 
 # User Credentials
@@ -301,9 +341,10 @@ done
 # Sets macOS.
 #
 
-# Ask before potentially overwriting files.
-read -q "REPLY?macOS: update your macOS System Default.
-Before continuing, to ensure all changes apply, head to System Preferences > Security & Privacy, then grant Full Disk Access to Terminal. Ready to proceed? (y/n) "
+# macOS System Defaults Update Confirmation.
+echo "macOS: update your macOS System Default."
+echo "Before continuing, ensure all changes apply, head to System Preferences > Security & Privacy, then grant Full Disk Access to Terminal."
+read -p "Ready to proceed with system defaults update? [y/N] " -n 1 -r REPLY
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   source "${UTILS_DIR}/opt/macOS/sysprefs"
@@ -315,10 +356,12 @@ fi
 # Reboot OS.
 #
 
-read -q "REPLY?macOS: Done! Some of these changes require a reboot to take effect. Proceed with reboot? (y/n) "
+echo "Some changes require a reboot to take effect."
+read -p "Proceed with reboot? [y/N] " -n 1 -r REPLY
 echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]; then
+  echo "Rebooting now..."
   osascript -e 'tell app "loginwindow" to «event aevtrrst»'
 else
-  echo 'macOS: Reboot aborted.'
+  echo 'Reboot aborted by the user.'
 fi

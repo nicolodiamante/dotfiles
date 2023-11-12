@@ -1,67 +1,57 @@
-#
+#!/bin/zsh
+
 # Environment variables for launchd.
 # Ref: https://support.apple.com/en-gb/guide/terminal/apdc6c1077b-5d5d-4d35-9c19-60f2397b2369/mac
-#
 
 launch() {
   local COMMAND="${1}"
-  local PLIST_FILE="${2}"
-  local DIR_AGENTS="${HOME}/Library/LaunchAgents"
+  local AGENT="${2}"
+  local LIB_AGENTS="${HOME}/Library/LaunchAgents"
 
   # Show `help` message.
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-    <<EOF
-Usage: launch subcommand [arguments ...]
-System wide and per-user daemon/agent manager
-
-  -d, --dir       per-user agents provided by the user
-  -l, --list      show all running launchctl daemons/agents
-  -g, --grep      show only the specified launchctl daemons/agents
-
-  -L, --load      load the specified configuration file
-  -R, --reload    force the unloading and loading of the plist
-  -S, --start     start the specified job by label
-
-  -u, --unload    unload the specified job by label
-  -r, --remove    remove the job from launchd by label
-  -s, --stop      stop the specified job by label
-
-  -h, --help      display this help and exit
-
-Full documentation locally via: 'man launchd' or 'man launchctl'
-EOF
+    echo "Usage: launch [OPTION] [FILE]"
+    echo
+    echo "Options:"
+    echo "  -d, --dir       Navigate to the user's agents directory"
+    echo "  -l, --list      List all running launchctl daemons/agents"
+    echo "  -g, --grep      Filter the list of launchctl daemons/agents"
+    echo
+    echo "  -L, --load      Load the specified configuration file"
+    echo "  -R, --reload    Reload the specified configuration file"
+    echo "  -S, --start     Start the specified job by label"
+    echo
+    echo "  -u, --unload    Unload the specified configuration file"
+    echo "  -r, --remove    Remove the job from launchd by label"
+    echo "  -s, --stop      Stop the specified job by label"
+    echo
+    echo "  -h, --help      Display this help and exit"
+    echo
+    echo "For more information, see 'man launchd' and 'man launchctl'."
     return 0
   fi
 
   # Launchd Services
   if [[ "$COMMAND" == "-d" || "$COMMAND" == "--dir" ]]; then
-     cd "${DIR_AGENTS}"
+    cd "${LIB_AGENTS}" || return
   elif [[ "$COMMAND" == "-l" || "$COMMAND" == "--list" ]]; then
     sudo launchctl list
-  elif [[ "$COMMAND" == "-g" || "$COMMAND" == "--grep" && -n "$PLIST_FILE" ]]; then
-    launchctl list | grep ${PLIST_FILE}
-  elif [[ "$COMMAND" == "-R" || "$COMMAND" == "--reload" && -n "$PLIST_FILE" ]]; then
-    cd "${DIR_AGENTS}" && echo "reloading ${PLIST_FILE}"
-    launchctl unload ${PLIST_FILE} && launchctl load ${PLIST_FILE} && \
-    popd > /dev/null 2>&1
-  elif [[ "$COMMAND" == "-L" || "$COMMAND" == "--load" && -n "$PLIST_FILE" ]]; then
-    cd "${DIR_AGENTS}" && echo "loading ${PLIST_FILE}"
-    launchctl load ${PLIST_FILE} && popd > /dev/null 2>&1
-  elif [[ "$COMMAND" == "-u" || "$COMMAND" == "--unload" && -n "$PLIST_FILE" ]]; then
-    cd "${DIR_AGENTS}" && echo "unloading ${PLIST_FILE}"
-    launchctl unload ${PLIST_FILE} && popd > /dev/null 2>&1
-  elif [[ "$COMMAND" == "-S" || "$COMMAND" == "--start" && -n "$PLIST_FILE" ]]; then
-    cd "${DIR_AGENTS}" && echo "starting ${PLIST_FILE}"
-    launchctl start ${PLIST_FILE} && popd > /dev/null 2>&1
-  elif [[ "$COMMAND" == "-s" || "$COMMAND" == "--stop" && -n "$PLIST_FILE" ]]; then
-    cd "${DIR_AGENTS}" && echo "stopping ${PLIST_FILE}"
-    launchctl stop ${PLIST_FILE} && popd > /dev/null 2>&1
-  elif [[ "$COMMAND" == "-r" || "$COMMAND" == "--remove" && -n "$PLIST_FILE" ]]; then
-    cd "${DIR_AGENTS}" && echo "removing ${PLIST_FILE}"
-    launchctl remove ${PLIST_FILE} && popd > /dev/null 2>&1
+  elif [[ "$COMMAND" == "-g" || "$COMMAND" == "--grep" && -n "$AGENT" ]]; then
+    launchctl list | grep "${AGENT}"
+  elif [[ "$COMMAND" == "-R" || "$COMMAND" == "--reload" && -n "$AGENT" ]]; then
+    pushd "${LIB_AGENTS}" > /dev/null && echo "reloading ${AGENT}" && launchctl unload "${AGENT}" && launchctl load "${AGENT}" && popd > /dev/null
+  elif [[ "$COMMAND" == "-L" || "$COMMAND" == "--load" && -n "$AGENT" ]]; then
+    pushd "${LIB_AGENTS}" > /dev/null && echo "loading ${AGENT}" && launchctl load "${AGENT}" && popd > /dev/null
+  elif [[ "$COMMAND" == "-u" || "$COMMAND" == "--unload" && -n "$AGENT" ]]; then
+    pushd "${LIB_AGENTS}" > /dev/null && echo "unloading ${AGENT}" && launchctl unload "${AGENT}" && popd > /dev/null
+  elif [[ "$COMMAND" == "-S" || "$COMMAND" == "--start" && -n "$AGENT" ]]; then
+    pushd "${LIB_AGENTS}" > /dev/null && echo "starting ${AGENT}" && launchctl start "${AGENT}" && popd > /dev/null
+  elif [[ "$COMMAND" == "-s" || "$COMMAND" == "--stop" && -n "$AGENT" ]]; then
+    pushd "${LIB_AGENTS}" > /dev/null && echo "stopping ${AGENT}" && launchctl stop "${AGENT}" && popd > /dev/null
+  elif [[ "$COMMAND" == "-r" || "$COMMAND" == "--remove" && -n "$AGENT" ]]; then
+    pushd "${LIB_AGENTS}" > /dev/null && echo "removing ${AGENT}" && launchctl remove "${AGENT}" && popd > /dev/null
   else
     echo "launch: command not found or plist file is not defined"
+    return 1
   fi
 }
-
-unset launch

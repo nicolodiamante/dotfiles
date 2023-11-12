@@ -2,8 +2,9 @@
 # System-wide env for interactive zsh(1) shells.
 #
 
-# Z Shell
-export ZDOTDIR=${ZDOTDIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/zsh
+# Z Shell configuration directory path.
+ZSH_CONFIG_PATH="${ZDOTDIR:-${XDG_CONFIG_HOME:-$HOME/.config}}/zsh"
+export ZDOTDIR="${ZSH_CONFIG_PATH:-$HOME}"
 
 # Ensure that a non-login, non-interactive shell has a defined environment.
 if [[ ( "$SHLVL" -eq 1 && ! -o LOGIN ) && -s "${ZDOTDIR}" ]]; then

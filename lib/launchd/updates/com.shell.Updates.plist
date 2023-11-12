@@ -6,7 +6,7 @@
     <string>com.shell.Updates</string>
     <key>ProgramArguments</key>
     <array>
-      <string>/bin/sh</string>
+      <string>/bin/zsh</string>
       <string>-c</string>
       <string>exec $HOME/Library/Mobile\ Documents/com~apple~CloudDocs/dotfiles/lib/launchd/updates/script/updates.zsh</string>
       <string>-mode=scheduled</string>

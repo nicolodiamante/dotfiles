@@ -1,53 +1,80 @@
 #!/bin/zsh
 
 #
-# Install dotfiles
+# Start dotfiles Installation.
 #
 
-# Exit if not MacOS
-[[ "$OSTYPE" = darwin* ]] || exit 1
-
-# Identify Operating System
-MACOS_BUILD=$(sw_vers -buildVersion)
-MACOS_VERSION=$(sed -E -e 's/([0-9]{2}).*/\1/' <<< "$MACOS_BUILD")
-if [[ "$MACOS_VERSION" -ge 16 ]]; then
-  CLOUD_DOCS="${HOME}/Library/Mobile Documents/com~apple~CloudDocs"
+# Validate OS.
+if [[ "$OSTYPE" != "darwin"* ]]; then
+  echo "This script is only compatible with macOS" >&2
+  exit 1
 fi
 
-DOTFILES_ROOT="${ZDOTDIR:-${CLOUD_DOCS:-$HOME}}/dotfiles"
-INSTALL=./utils/install.sh
+# Determines the current user's shell.
+if [[ "$SHELL" != */zsh ]]; then
+  echo "Please switch to zsh shell to continue."
+  exit 1
+fi
 
-SOURCE=https://github.com/nicolodiamante/dotfiles
+# Path to iCloud Drive.
+SW_VERS=$(sw_vers -buildVersion)
+OS_VERS=$(sed -E -e 's/([0-9]{2}).*/\1/' <<< "$SW_VERS")
+if [[ "$OS_VERS" -ge 16 ]]; then
+  export CLOUD_DOCS="${HOME}/Library/Mobile Documents/com~apple~CloudDocs"
+fi
+
+# Defines the PATHs.
+ZSH_CONFIG_PATH="${ZDOTDIR:-$CLOUD_DOCS}"
+DOTFILES_ROOT="${ZSH_CONFIG_PATH:-$HOME}/dotfiles"
+SOURCE="https://github.com/nicolodiamante/dotfiles"
 TARBALL="${SOURCE}/tarball/master"
 TARGET="${DOTFILES_ROOT}"
-TAR_CMD="tar -xzv -C "${TARGET}" --strip-components 1 --exclude .gitignore"
+TAR_CMD="tar -xzv -C \"${TARGET}\" --strip-components 1 --exclude .gitignore"
+INSTALL="${TARGET}/utils/install.sh"
 
-# Check if command is executable
+# Check if a command is executable.
 is_executable() {
-  type "$1" > /dev/null 2>&1
+  command -v "$1" &> /dev/null
 }
 
-# Check if dotfiles already installed and proceed based on user input
-if [[ -d "$DOTFILES_ROOT" ]]; then
-  read -q "REPLY?dotfiles already exist in ${DOTFILES_ROOT}. Proceed with the installation? (y/n) " -n 1;
-  echo "";
-  if [[ $REPLY =~ ^[Yy]$ ]]; then
-    source "${INSTALL}"
+# Ensure TARGET directory doesn't already exist.
+if [[ -d "$TARGET" ]]; then
+  echo "Target directory $TARGET already exists. Please remove or rename it and try again."
+  exit 1
+fi
+
+# Checks which executable is available then downloads and installs.
+if is_executable "git"; then
+  CMD="git clone ${SOURCE} ${TARGET}"
+elif is_executable "curl"; then
+  CMD="curl -L ${TARBALL} | ${TAR_CMD}"
+elif is_executable "wget"; then
+  CMD="wget --no-check-certificate -O - ${TARBALL} | ${TAR_CMD}"
+else
+  echo 'No git, curl, or wget available. Aborting!'
+  exit 1
+fi
+
+echo 'Installing Dotfiles...'
+
+# Create the target directory and proceed with the chosen download method.
+if ! mkdir -p "${TARGET}"; then
+  echo "Error: Failed to create target directory. Aborting!" >&2
+  exit 1
+fi
+
+# Execute the download command and run the installation script.
+if eval "${CMD}"; then
+  if cd "${TARGET}"; then
+    if ! source "${INSTALL}"; then
+      echo "Error: Failed to run the install script. Aborting!" >&2
+      exit 1
+    fi
+  else
+    echo "Error: Failed to navigate to ${TARGET}. Aborting!" >&2
+    exit 1
   fi
 else
-  # Check which download method is available
-  if is_executable "git"; then
-    CMD="git clone ${SOURCE} ${TARGET}"
-  elif is_executable "curl"; then
-    CMD="curl -L ${TARBALL} | ${TAR_CMD}"
-  elif is_executable "wget"; then
-    CMD="wget --no-check-certificate -O - ${TARBALL} | ${TAR_CMD}"
-  fi
-
-  if [[ -z "$CMD" ]]; then
-    echo 'No git, curl or wget available. Aborting!'
-  else
-    echo 'Installing dotfiles...'
-    mkdir -p "${TARGET}" && eval "${CMD}" && cd "${TARGET}" && source "${INSTALL}"
-  fi
+  echo "Download failed. Aborting!" >&2
+  exit 1
 fi

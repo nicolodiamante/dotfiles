@@ -5,9 +5,29 @@
 # MIT License
 #
 
-simple_prompt=https://raw.githubusercontent.com/nicolodiamante/simple/main/script/simple
+# Prompt URL.
+simple_prompt="https://raw.githubusercontent.com/nicolodiamante/simple/main/script/simple"
+
+# Attempt to download and source Simple.
 if command -v curl &> /dev/null; then
-  source <(curl -s $simple_prompt)
+  # Using curl.
+  script_content=$(curl -s "$simple_prompt")
+elif command -v wget &> /dev/null; then
+  # Using wget.
+  script_content=$(wget -O - "$simple_prompt")
+elif command -v fetch &> /dev/null; then
+  # Using fetch (common in FreeBSD).
+  script_content=$(fetch -o - "$simple_prompt")
 else
-  source <(wget -O - $simple_prompt)
+  echo "Neither curl, wget, nor fetch is available."
+  exit 1
 fi
+
+# Check if the script was downloaded successfully before sourcing.
+if [[ -z "$script_content" ]]; then
+  echo "Failed to download the Simple script."
+  exit 1
+fi
+
+# Source the downloaded script.
+source <(echo "$script_content")
