@@ -119,9 +119,7 @@ Thanks for considering these Dotfiles for your development needs. If you have an
 </p>
 
 <p align="center">
-  <picture>
-    <img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/6ab67548-8a44-4c3c-8b30-e96cd13f38f0" draggable="false" ondragstart="return false;" alt="Nicol&#242; Diamante" title="Nicol&#242; Diamante" width="17px" />
-  </picture>
+  <a href="https://nicolodiamante.com" target="_blank"><img src="https://github.com/nicolodiamante/dotfiles/assets/48920263/6ab67548-8a44-4c3c-8b30-e96cd13f38f0" draggable="false" ondragstart="return false;" alt="Nicol&#242; Diamante Portfolio" title="Nicol&#242; Diamante" width="17px" /></a>
 </p>
 
 <p align="center">

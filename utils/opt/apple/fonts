@@ -3,9 +3,20 @@
 # Ref: https://developer.apple.com/fonts/
 #
 
-apple_fonts=https://gist.githubusercontent.com/nicolodiamante/3d7188f13f10ca6533a39d83c28dcd7b/raw/2083281715bc4b04dfd9da41c887755ef27d7562/apple_fonts
+# Apple fonts source URL.
+apple_fonts=https://gist.githubusercontent.com/nicolodiamante/3d7188f13f10ca6533a39d83c28dcd7b/raw/c2ad0c876e02cb5fa1d073858f13763e28b72d85/apple_fonts
+
+# Attempt to download and source Apple Fonts.
 if command -v curl &> /dev/null; then
-  source <(curl -s $apple_fonts)
+  # Using curl.
+  source <(curl -s "$apple_fonts")
+elif command -v wget &> /dev/null; then
+  # Using wget.
+  source <(wget -O - "$apple_fonts")
+elif command -v fetch &> /dev/null; then
+  # Using fetch (common in FreeBSD).
+  source <(fetch -o - "$apple_fonts")
 else
-  source <(wget -O - $apple_fonts)
+  echo "Failed to download the fonts, neither curl, wget, nor fetch is available."
+  return 1
 fi
