@@ -26,7 +26,10 @@ unsetopt MENU_COMPLETE
 # Shell Completion
 # Ref: https://docs.brew.sh/Shell-Completion
 if type brew &>/dev/null; then
-  fpath=(/usr/local/share/zsh/site-functions $fpath)
+  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
+
+  autoload -Uz compinit
+  compinit
 fi
 
 # Load and initialize the completion system.

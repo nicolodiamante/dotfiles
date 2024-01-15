@@ -42,9 +42,7 @@ for config_files in $LIB_DIR/^(git|ssh)/config; do
   [[ -r "$config_files" ]] && source "${config_files}"
 done
 
-unset startup_files usr_files config_files
-
 # Enable zsh-autosuggestions (keep the following at the end).
-if [[ -r /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
-  source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+if [[ -r /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
+  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi

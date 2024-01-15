@@ -6,11 +6,10 @@
 .DS_Store
 lib/launchd/norflow/
 lib/launchd/prune/
-lib/mackup/settings/
 lib/ssh/keys/*
 lib/ssh/known_hosts
 user/*
-utils/opt/apple/*
+utils/opt/usr
 
 #
 # Except
@@ -18,4 +17,3 @@ utils/opt/apple/*
 
 !lib/ssh/keys/.gitkeep
 !lib/ssh/config
-!utils/opt/apple/fonts

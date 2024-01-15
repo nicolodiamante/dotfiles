@@ -4,7 +4,7 @@
 # A shell script to automate the uninstall of the dotfiles.
 #
 
-# Source the initialization script to set up the environment.
+# Source the initialization script to set up the environment
 INIT_SCRIPT="${0:a:h}/lib/systemd/init"
 if [[ -r "$INIT_SCRIPT" ]]; then
   source "${INIT_SCRIPT}"
@@ -27,47 +27,45 @@ fi
 
 echo "Start removing Dotfiles..."
 
-# Remove configurations.
+# Remove configurations
 for file in "$HOME/editorconfig" "$HOME/.{hushlogin,zshenv}"; do
   [[ -f "$file" ]] && rm "$file"
 done
 
-for dir in "$XDG_CONFIG_HOME/{curl,git,nano,node,npm,ssh,tmux,zsh}" "$XDG_DATA_HOME/{nvm,zsh}"; do
+for dir in "$XDG_CONFIG_HOME/{curl,git,nano,node,npm,tmux,zsh}" "$XDG_DATA_HOME/{nvm,zsh}"; do
   [[ -d "$dir" ]] && rm -rf "$dir"
   echo "configurations symlinks removed."
 done
 
-# Remove editorconfig symlink.
-if [ -L "${HOME}/.editorconfig" ]; then
+# Remove editorconfig symlink
+if [[ -L "${HOME}/.editorconfig" ]]; then
   rm "${HOME}/.editorconfig"
   echo "editorconfig symlink removed."
 else
   echo "No editorconfig symlink found in the home directory."
 fi
 
-# Uninstall Launch Agents and Unload .plist files.
+# Uninstall Launch Agents and unload plist files
 LAUNCHD_DIR="${LIB_DIR}/launchd"
-LAUNCH_AGENTS="${HOME}/Library/LaunchAgents"
-LAUNCH_DAEMONS="/Library/LaunchDaemons"
-
+LAUNCHD_LIB="${HOME}/Library/LaunchAgents"
 if [[ -d "$LAUNCHD_DIR" ]]; then
-  if [[ -d "$LAUNCHD_DIR/norflow" ]]; then
-    launchctl unload "${LAUNCH_AGENTS}/com.shell.Norflow.plist"
-    rm "${LAUNCH_AGENTS}/com.shell.Norflow.plist"
-  fi
+  # Change director and load Launchpad plist
+  cd "${LAUNCHD_LIB}" && osascript -e '
+  tell application "Terminal"
+    set textToType1 to "launchctl unload com.shell.Updates.plist"
 
-  if [[ -d "$LAUNCHD_DIR/prune" ]]; then
-    launchctl unload "${LAUNCH_AGENTS}/com.shell.Prune.plist"
-    rm "${LAUNCH_AGENTS}/com.shell.Prune.plist"
-  fi
+    tell application "System Events"
+      keystroke textToType1
+      delay 0.5
+      keystroke return
+    end tell
+  end tell'
 
-  if [[ -d "$LAUNCHD_DIR/updates" ]]; then
-    launchctl unload "${LAUNCH_AGENTS}/com.shell.Updates.plist"
-    rm "${LAUNCH_AGENTS}/com.shell.Updates.plist"
-  fi
+  # Remove Launchpad plist
+  rm "${LAUNCHD_LIB}/com.shell.Updates.plist" && cd "${HOME}"
 fi
 
-# Unload and remove VSCode configs.
+# Unload and remove Visual Studio Code configs
 CODE="/Applications/Visual\ Studio\ Code.app"
 CODE_USER="$HOME/Library/Application Support/Code/User"
 if [[ -d "$CODE" ]]; then

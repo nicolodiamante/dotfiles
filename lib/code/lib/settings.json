@@ -26,9 +26,7 @@
   "breadcrumbs.enabled": true,
   "editor.tabSize": 2,
   "window.title": "${activeEditorShort}${separator}${rootName}",
-  "window.titleBarStyle": "native",
-  "window.nativeTabs": true,
-  "window.zoomLevel": -0.248,
+  "window.zoomLevel": -0.025,
   "editor.insertSpaces": true,
   "editor.scrollBeyondLastLine": false,
   "editor.padding.bottom": 644,
@@ -37,11 +35,11 @@
   "editor.guides.indentation": true,
   "editor.renderLineHighlight": "all",
   "workbench.colorTheme": "GitHub Dark Default",
-  "workbench.editor.tabCloseButton": "left",
   "workbench.editor.showIcons": true,
   "workbench.editor.enablePreview": false,
   "problems.decorations.enabled": false,
   "editor.bracketPairColorization.enabled": false,
+  "workbench.editor.tabActionLocation": "left",
   "editor.linkedEditing": true,
 
   // Indentation File Tree Structure
@@ -119,7 +117,7 @@
   "markdown.preview.lineHeight": 1.6,
 
   // Highlighting
-  "editor.occurrencesHighlight": false, // Syntax highlighting (place cursor inside variable)
+  "editor.occurrencesHighlight": "off", // Syntax highlighting (place cursor inside variable)
   "editor.selectionHighlight": true, // Selection highlighting (similar chunks in document)
 
   // Terminal
@@ -134,6 +132,7 @@
   "terminal.integrated.lineHeight": 1.2,
   "terminal.integrated.minimumContrastRatio": 1,
   "terminal.integrated.shellIntegration.decorationsEnabled": "never",
+  "terminal.integrated.profiles.osx": { "zsh": { "path": "/bin/zsh", "args": ["-l", "-i"] } }
 
   // Prettier
   "prettier.configPath": "~/Library/Application Support/Code/User/configExtensions/prettierrc.json",
@@ -142,13 +141,12 @@
   "editor.formatOnPaste": false,
   "prettier.printWidth": 120,
 
-  // GitLens\
+  // GitLens
   "editor.codeLens": false,
   "gitlens.codeLens.enabled": false,
   "gitlens.codeLens.recentChange.enabled": false,
   "gitlens.codeLens.authors.enabled": false,
   "gitlens.currentLine.enabled": false,
-  //"gitlens.mode.active": "zen",
 
   // Integrated Terminal colors
   "workbench.colorCustomizations": {
@@ -157,5 +155,11 @@
     "editorRuler.foreground": "#30363d",
     "terminal.background": "#0d1117",
     "panel.background": "#0d1117"
+  },
+
+  // Codeium
+  "codeium.enableConfig": {
+    "*": true,
+    "markdown": true
   }
 }

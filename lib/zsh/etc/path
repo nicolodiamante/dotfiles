@@ -4,18 +4,23 @@
 #
 
 path=(
+/opt/homebrew/bin
+/opt/homebrew/sbin
 /usr/local/bin
+/System/Cryptexes/App/usr/bin
 /usr/bin
 /bin
-/usr/local/sbin
 /usr/sbin
 /sbin
+/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin
+/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin
+/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin
 )
 
 # Directories to be prepended to the PATH
 prepend=(
-  /usr/local/opt/curl/bin
-  /usr/local/opt/coreutils/libexec/gnubin
+  /opt/homebrew/opt/curl/bin
+  /opt/homebrew/opt/coreutils/libexec/gnubin
 )
 
 # Directories to be appended to the PATH

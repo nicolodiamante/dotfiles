@@ -2,13 +2,13 @@
 # Directories.
 #
 
-# Move up levels.
+# Move up levels
 alias -g ...='../..'
 alias -g ....='../../..'
 alias -g .....='../../../..'
 alias -g ......='../../../../..'
 
-# Move up to the parent directory.
+# Move up to the parent directory
 alias -- -='cd -'
 alias 1='cd -'
 alias 2='cd -2'
@@ -25,10 +25,10 @@ alias dl="${HOME}/Downloads"
 alias doc="${HOME}/Documents"
 alias dt="${HOME}/Desktop"
 
-# iCloud Drive (from OS X 10.12 Sierra or later).
-SW_VERS=$(sw_vers -buildVersion)
-OS_VERS=$(sed -E -e 's/([0-9]{2}).*/\1/' <<< "$SW_VERS")
-if [[ "$OS_VERS" -ge 16 ]]; then
+# iCloud Drive (from OS X 10.12 Sierra or later)
+SW_VERS=$(sw_vers --productVersion)
+OS_VERS=$(echo "$SW_VERS" | cut -d '.' -f 1)
+if [[ "$OS_VERS" -ge 10 ]]; then
   alias icloud='${CLOUD_DOCS}'
 fi
 
@@ -37,19 +37,19 @@ if [[ -d "$HOME/Dropbox" ]]; then
   alias dropbox="${HOME}/Dropbox"
 fi
 
-# Prompt before overwrite.
+# Prompt before overwrite
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
 
-# Remove directory.
+# Remove directory
 alias rmd='rmdir'
 
 #
 # List directories
 #
 
-# List only directories.
+# List only directories
 alias ll="ls -lFd *(-/N) --time-style="\${TIME_STYLE}""
 
 # List all files, directories first
@@ -73,8 +73,8 @@ alias lm="ls -hlt --time-style="\${TIME_STYLE}""
 # to that directory.
 setopt AUTO_CD
 
-# Make cd push the old directory onto the directory stack.
+# Make cd push the old directory onto the directory stack
 setopt AUTO_PUSHD
 
-# Don't push multiple copies of the same directory onto the directory stack.
+# Don't push multiple copies of the same directory onto the directory stack
 setopt PUSHD_IGNORE_DUPS

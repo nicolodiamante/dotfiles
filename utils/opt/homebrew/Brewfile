@@ -12,6 +12,7 @@ tap "homebrew/cask"
 
 #
 # 'brew install'
+#
 
 brew "coreutils"
 brew "curl"
@@ -34,9 +35,7 @@ cask "adobe-creative-cloud"
 cask "discord"
 cask "figma"
 cask "google-chrome"
-cask "grammarly-desktop"
 cask "tunnelbear"
-cask "slack"
 cask "visual-studio-code"
 
 #
@@ -44,6 +43,6 @@ cask "visual-studio-code"
 #
 
 mas "AdGuard for Safari", id: 1440147259
+mas "Data Jar", id:1453273600
 mas "Grammarly for Safari", id: 1462114288
-mas "Data Jar", id: 1453273600
 mas "Magnet", id: 441258766

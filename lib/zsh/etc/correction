@@ -2,7 +2,7 @@
 # System-wide corrections for interactive zsh(1) login shells.
 #
 
-# Prevent shell to correct determinate words.
+# Prevent shell to correct determinate words
 alias cd='nocorrect cd'
 alias cp='nocorrect cp'
 alias grep='nocorrect grep'
