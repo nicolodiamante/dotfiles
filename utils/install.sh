@@ -220,7 +220,7 @@ if [[ -d "$EDITOR_CONFIG" ]], then
   ln -s "${EDITOR_CONFIG}" "${HOME}/.editorconfig"
 fi
 
-# hushlogin
+# Hushlogin
 touch .hushlogin &&
 cat << EOF >> "${HOME}/.hushlogin"
 #
@@ -230,6 +230,18 @@ cat << EOF >> "${HOME}/.hushlogin"
 # appear on login. See 'man login'.
 #
 EOF
+
+# User Config
+if [[ ! -d "$DOTFILES/user" ]], then
+  mkdir -p "${DOTFILES}/user" && touch .config &&
+cat << EOF >> "${DOTFILES}/user/.config"
+#
+# System-wide user shell configurations. This file will be sourced
+# along with the other files. You can use it to add commands you
+# don’t want to commit to a public repository.
+#
+EOF
+fi
 
 #
 # Sets macOS
