@@ -54,7 +54,7 @@ With the [Bootstrap script][bootstrap], you can easily manage and install packag
 Let's get started, download the repository via curl:
 
 ```shell
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/nicolodiamante/dotfiles/HEAD/bootstrap.zsh)"
+zsh -c "$(curl -fsSL https://raw.githubusercontent.com/nicolodiamante/dotfiles/HEAD/bootstrap.zsh)"
 ```
 
 The script will first attempt to clone the repository to `~/Library/Mobile Documents/com~apple~CloudDocs`, which is the path to the iCloud Drive directory for the user. If iCloud Drive is not available, the script will then clone the repository to `~` which is a local directory on the user's system.
