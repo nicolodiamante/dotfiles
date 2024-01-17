@@ -251,9 +251,13 @@ if [[ ! -d "$DOTFILES/user" ]], then
   mkdir -p "${DOTFILES}/user" && touch .config &&
 cat << EOF >> "${DOTFILES}/user/.config"
 #
-# System-wide user shell configurations. This file will be sourced
-# along with the other files. You can use it to add commands you
-# don’t want to commit to a public repository.
+# System-wide User Shell Configurations
+#
+# This file is part of a series of configuration files that will be sourced
+# together.Use this file to include shell commands or settings that are
+# specific to your system and should not be shared in a public repository.
+# It's ideal for personal commands,local environment variables, and other
+# configurations you prefer to keep private.
 #
 EOF
 fi

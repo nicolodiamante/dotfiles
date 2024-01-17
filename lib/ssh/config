@@ -21,7 +21,7 @@ Host *
   AddKeysToAgent yes
   UseKeychain yes
   IdentityFile ~/.config/ssh/keys/id_ed25519
-  UserKnownHostsFile ~/.local/share/ssh/known_hosts
+  UserKnownHostsFile ~/.local:share/ssh/known_hosts
 
 Host github.com
   Hostname ssh.github.com
