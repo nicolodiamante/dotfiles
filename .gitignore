@@ -4,8 +4,7 @@
 
 *.swp
 .DS_Store
-lib/launchd/norflow/
-lib/launchd/prune/
+lib/launchd/*
 lib/ssh/keys/*
 lib/ssh/known_hosts
 user/*
@@ -15,5 +14,7 @@ utils/opt/usr
 # Except
 #
 
+!lib/launchd/updates/script/
+!lib/launchd/config
 !lib/ssh/keys/.gitkeep
 !lib/ssh/config

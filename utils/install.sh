@@ -122,23 +122,8 @@ if [[ -d "$LIB_DIR/ssh" ]]; then
 
   # Correcting Permissions on the SSH Directory.
   # See: https://serverpilot.io/docs/how-to-use-ssh-public-key-authentication
-  osascript -e '
-  tell application "Terminal"
-    set textToType1 to "chmod 700 ${XDG_CONFIG_HOME}/ssh"
-    set textToType2 to "chmod 644 ${XDG_DATA_HOME}/ssh/known_hosts"
-
-    tell application "System Events"
-      keystroke textToType1
-      delay 0.5
-      keystroke return
-
-      delay 0.5
-
-      keystroke textToType2
-      delay 0.5
-      keystroke return
-    end tell
-  end tell'
+  chmod 700 "${XDG_CONFIG_HOME}/ssh"
+  chmod 644 "${XDG_DATA_HOME}/ssh/known_hosts"
 fi
 
 # Visual Studio Code
@@ -146,6 +131,7 @@ CODE=/Applications/Visual\ Studio\ Code.app
 CODE_USER="${HOME}/Library/Application Support/Code/User"
 CODE_CONFIG="${UTILS_DIR}/code"
 CODE_EXTENSIONS="${UTILS_DIR}/opt/code/extensions"
+
 if [[ -e "$CODE" ]]; then
   # Open the App to create the default directories.
   open "$CODE" && sleep 10 && osascript -e 'quit app "Visual Studio Code"'
@@ -174,6 +160,7 @@ fi
 # Xcode
 XCODE=/Applications/Xcode.app
 XCODE_THEMES="${HOME}/Library/Developer/Xcode/UserData/FontAndColorThemes"
+
 if [[ -e "$XCODE" ]]; then
   # Open the App to create the default directories.
   open "$XCODE" && sleep 10 && osascript -e 'quit app "Xcode"'
@@ -191,31 +178,59 @@ fi
 # Launch Agents
 LAUNCHD_DIR="${LIB_DIR}/launchd"
 LAUNCHD_LIB="${HOME}/Library/LaunchAgents"
+AGENT_TARGET="${LAUNCHD_DIR}/updates/com.shell.Updates.plist"
+AGENT_SCRIPT="${LAUNCHD_DIR}/updates/script/updates.zsh"
+AGENTS_DIR="${HOME}/.scripts"
+USER_HOME_PATH=$(eval echo ~$USER)
+
 if [[ -d "$LAUNCHD_DIR" ]]; then
-  # Check for Launchpad plist, else create it.
-  if [[ ! -d "$LAUNCHD_LIB" ]]; then
-    mkdir -p "${LAUNCHD_LIB}"
+  # Check for directories, else create them
+  [[ ! -d "$LAUNCHD_LIB" ]] && mkdir -p "${LAUNCHD_LIB}"
+  [[ ! -d "$AGENTS_DIR" ]] && mkdir -p "${AGENTS_DIR}"
+
+if [[ ! -f "$AGENT_TARGET" ]]; then
+  # Create and write to plist file
+  touch "${AGENT_TARGET}"
+  cat > "${AGENT_TARGET}" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.shell.Updates</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>${USER_HOME_PATH}/.scripts/updates.zsh</string>
+      <string>-mode=scheduled</string>
+    </array>
+    <key>StartCalendarInterval</key>
+    <dict>
+      <key>Minute</key>
+      <integer>30</integer>
+      <key>Hour</key>
+      <integer>15</integer>
+    </dict>
+  </dict>
+</plist>
+EOF
+fi
+
+  # Symlink Agent and copy script
+  ln -s "${AGENT_TARGET}" "${LAUNCHD_LIB}" && \
+  cp "${AGENT_SCRIPT}" "${AGENTS_DIR}"
+
+  # Load the agent
+  echo "Loading the agent..."
+  if ! launchctl load "${AGENT_TARGET}"; then
+    echo "Failed to load the agent." >&2
+  else
+    echo "Agent loaded successfully."
   fi
-
-  # Change directory to LAUNCHD_LIB
-  cd "${LAUNCHD_LIB}" && \
-  ln -s "${LAUNCHD_DIR}/updates/com.shell.Updates.plist" "${LAUNCHD_LIB}"
-
-  # Load Launchpad plist
-  osascript -e '
-  tell application "Terminal"
-    set textToType1 to "launchctl load com.shell.Updates.plist"
-
-    tell application "System Events"
-      keystroke textToType1
-      delay 0.5
-      keystroke return
-    end tell
-  end tell' && cd "${HOME}"
 fi
 
 # EditorConfig
 EDITOR_CONFIG="${UTILS_DIR}/opt/editorconfig/editorconfig"
+
 if [[ -d "$EDITOR_CONFIG" ]], then
   ln -s "${EDITOR_CONFIG}" "${HOME}/.editorconfig"
 fi

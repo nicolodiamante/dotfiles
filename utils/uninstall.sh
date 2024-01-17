@@ -6,6 +6,7 @@
 
 # Source the initialization script to set up the environment
 INIT_SCRIPT="${0:a:h}/lib/systemd/init"
+
 if [[ -r "$INIT_SCRIPT" ]]; then
   source "${INIT_SCRIPT}"
 else
@@ -45,29 +46,38 @@ else
   echo "No editorconfig symlink found in the home directory."
 fi
 
-# Uninstall Launch Agents and unload plist files
-LAUNCHD_DIR="${LIB_DIR}/launchd"
+# Uninstall Launch Agent
 LAUNCHD_LIB="${HOME}/Library/LaunchAgents"
-if [[ -d "$LAUNCHD_DIR" ]]; then
-  # Change director and load Launchpad plist
-  cd "${LAUNCHD_LIB}" && osascript -e '
-  tell application "Terminal"
-    set textToType1 to "launchctl unload com.shell.Updates.plist"
+AGENT_TARGET="${LAUNCHD_LIB}/updates/com.shell.Updates.plist"
+AGENTS_DIR="${HOME}/.scripts"
+AGENT_SCRIPT="${AGENTS_DIR}/updates.zsh"
 
-    tell application "System Events"
-      keystroke textToType1
-      delay 0.5
-      keystroke return
-    end tell
-  end tell'
+# Unload the agent
+if [[ -f "$AGENT_TARGET" ]]; then
+  echo "Unloading the agent..."
+  if ! launchctl unload "${AGENT_TARGET}"; then
+    echo "Failed to unload the agent." >&2
+  else
+    echo "Agent unloaded successfully."
+    # Remove the symlink
+    rm "${AGENT_TARGET}"
+  fi
+else
+  echo "Agent not found or already unloaded."
+fi
 
-  # Remove Launchpad plist
-  rm "${LAUNCHD_LIB}/com.shell.Updates.plist" && cd "${HOME}"
+# Remove the script
+if [[ -f "$AGENT_SCRIPT" ]]; then
+  rm "${AGENT_SCRIPT}"
+  echo "Agent script removed."
+else
+  echo "Agent script not found or already removed."
 fi
 
 # Unload and remove Visual Studio Code configs
 CODE="/Applications/Visual\ Studio\ Code.app"
 CODE_USER="$HOME/Library/Application Support/Code/User"
+
 if [[ -d "$CODE" ]]; then
   for config in "$CODE_USER"/{keybindings.json,settings.json}; do
     [[ -f "$config" ]] && rm "$config"

@@ -35,7 +35,7 @@ launch() {
   if [[ "$COMMAND" == "-d" || "$COMMAND" == "--dir" ]]; then
     cd "${LIB_AGENTS}" || return
   elif [[ "$COMMAND" == "-l" || "$COMMAND" == "--list" ]]; then
-    sudo launchctl list
+    launchctl list
   elif [[ "$COMMAND" == "-g" || "$COMMAND" == "--grep" && -n "$AGENT" ]]; then
     launchctl list | grep "${AGENT}"
   elif [[ "$COMMAND" == "-R" || "$COMMAND" == "--reload" && -n "$AGENT" ]]; then
