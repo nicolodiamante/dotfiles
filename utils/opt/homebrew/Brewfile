@@ -35,6 +35,7 @@ cask "adobe-creative-cloud"
 cask "discord"
 cask "figma"
 cask "google-chrome"
+cask "transmission"
 cask "tunnelbear"
 cask "visual-studio-code"
 

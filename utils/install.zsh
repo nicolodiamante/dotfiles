@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 
 #
 # Shell script to automate system tool setup for macOS.
@@ -13,7 +13,7 @@ INIT="$DOTFILES/lib/systemd/init"
 # Install
 #
 
-# Check for Xcode command line tools, else install
+# Check for Xcode command line tools, else install.
 echo 'Xcode: checking for command line tools...'
 if xcode-select -p 1>/dev/null; then
   echo 'Xcode: command line tools installed!'
@@ -22,7 +22,7 @@ else
   xcode-select --install
 fi
 
-# Check for Homebrew, else install
+# Check for Homebrew, else install.
 echo 'Checking for Homebrew...'
 if [[ -z `command -v brew` ]]; then
   echo 'Brew is missing! Installing it...'
@@ -36,7 +36,7 @@ fi
 [[ ! -d "$XDG_CACHE_HOME" ]] && mkdir -p "${XDG_CACHE_HOME}"
 
 #
-# Installing binaries and other packages
+# Installing binaries and other packages.
 #
 
 # Homebrew Bundle
@@ -44,20 +44,20 @@ echo 'Homebrew: installing binaries and other packages...'
 brew update && brew bundle --file=${UTILS_DIR}/opt/homebrew/Brewfile && brew cleanup
 
 #
-# Symlinks to the local config files
+# Symlinks to the local config files.
 #
 
 echo 'Symlinking all configurations...'
 
-# Curl
+# Curl Configurations.
 [[ ! -d "$XDG_CONFIG_HOME/curl" ]] && mkdir -p "${XDG_CONFIG_HOME}/curl"
 ln -s "${LIB_DIR}/curl/curlrc" "${XDG_CONFIG_HOME}/curl/.curlrc"
 
-# Nano
+# Nano Configurations.
 [[ ! -d "$XDG_CONFIG_HOME/nano" ]] && mkdir -p "${XDG_CONFIG_HOME}/nano"
 ln -s "${LIB_DIR}/nano/nanorc" "${XDG_CONFIG_HOME}/nano"
 
-# Zsh
+# Zsh Configurations.
 if brew ls --versions zsh > /dev/null; then
   [[ ! -d "$XDG_STATE_HOME/zsh" ]] && mkdir -p "${XDG_STATE_HOME}/zsh"
   [[ ! -d "$XDG_CONFIG_HOME/zsh" ]] && mkdir -p "${XDG_CONFIG_HOME}/zsh"
@@ -70,13 +70,13 @@ if brew ls --versions zsh > /dev/null; then
   ln -s "${LIB_DIR}/zsh/zshrc" "${XDG_CONFIG_HOME}/zsh/.zshrc"
 fi
 
-# Git
+# Git Configurations.
 if brew ls --versions git > /dev/null; then
   [[ ! -d "$XDG_CONFIG_HOME/git" ]] && mkdir -p "${XDG_CONFIG_HOME}/git"
   ln -s "${LIB_DIR}"/git/* "${XDG_CONFIG_HOME}/git"
 fi
 
-# Node
+# Node Configurations.
 if brew ls --versions node > /dev/null; then
   # nvm
   if brew ls --versions nvm > /dev/null; then
@@ -89,13 +89,13 @@ if brew ls --versions node > /dev/null; then
   [[ ! -d "$XDG_CONFIG_HOME/npm" ]] && mkdir -p "${XDG_CONFIG_HOME}/npm"
 fi
 
-# Tmux
+# Tmux Configurations.
 if brew ls --versions tmux > /dev/null; then
   [[ ! -d "$XDG_CONFIG_HOME/tmux" ]] && mkdir -p "${XDG_CONFIG_HOME}/tmux"
   ln -s "${LIB_DIR}/tmux/lib/tmux.conf" "${XDG_CONFIG_HOME}/tmux/tmux.conf"
 fi
 
-# SSH
+# SSH Configurations.
 # See: https://bit.ly/2VK3nlm
 # See: https://bit.ly/3lOMwIS
 if [[ -d "$LIB_DIR/ssh" ]]; then
@@ -112,7 +112,7 @@ if [[ -d "$LIB_DIR/ssh" ]]; then
     echo "ln: ${LIB_DIR}/ssh/keys is empty!"
   fi
 
-  # Known Hosts
+  # Known Hosts.
   if [[ -e "${LIB_DIR}/ssh/known_hosts" ]]; then
     ln -s "${LIB_DIR}/ssh/known_hosts" "${XDG_DATA_HOME}/ssh"
   else
@@ -126,7 +126,7 @@ if [[ -d "$LIB_DIR/ssh" ]]; then
   chmod 644 "${XDG_DATA_HOME}/ssh/known_hosts"
 fi
 
-# Visual Studio Code
+# Visual Studio Code Config and Extensions.
 CODE=/Applications/Visual\ Studio\ Code.app
 CODE_USER="${HOME}/Library/Application Support/Code/User"
 CODE_CONFIG="${UTILS_DIR}/code"
@@ -157,7 +157,7 @@ if [[ -e "$CODE" ]]; then
   fi
 fi
 
-# Xcode
+# Xcode Config and Theme.
 XCODE=/Applications/Xcode.app
 XCODE_THEMES="${HOME}/Library/Developer/Xcode/UserData/FontAndColorThemes"
 
@@ -175,7 +175,7 @@ if [[ -e "$XCODE" ]]; then
   fi
 fi
 
-# Launch Agents
+# Launch Agents Configuration.
 LAUNCHD_DIR="${LIB_DIR}/launchd"
 LAUNCHD_LIB="${HOME}/Library/LaunchAgents"
 AGENT_TARGET="${LAUNCHD_DIR}/updates/com.shell.Updates.plist"
@@ -184,12 +184,12 @@ AGENTS_DIR="${HOME}/.scripts"
 USER_HOME_PATH=$(eval echo ~$USER)
 
 if [[ -d "$LAUNCHD_DIR" ]]; then
-  # Check for directories, else create them
+  # Check for directories, else create them.
   [[ ! -d "$LAUNCHD_LIB" ]] && mkdir -p "${LAUNCHD_LIB}"
   [[ ! -d "$AGENTS_DIR" ]] && mkdir -p "${AGENTS_DIR}"
 
 if [[ ! -f "$AGENT_TARGET" ]]; then
-  # Create and write to plist file
+  # Create and write to plist file.
   touch "${AGENT_TARGET}"
   cat > "${AGENT_TARGET}" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -215,11 +215,11 @@ if [[ ! -f "$AGENT_TARGET" ]]; then
 EOF
 fi
 
-  # Symlink Agent and copy script
+  # Symlink Agent and copy script.
   ln -s "${AGENT_TARGET}" "${LAUNCHD_LIB}" && \
   cp "${AGENT_SCRIPT}" "${AGENTS_DIR}"
 
-  # Load the agent
+  # Load the agent.
   echo "Loading the agent..."
   if ! launchctl load "${AGENT_TARGET}"; then
     echo "Failed to load the agent." >&2
@@ -228,14 +228,14 @@ fi
   fi
 fi
 
-# EditorConfig
+# EditorConfig.
 EDITOR_CONFIG="${UTILS_DIR}/opt/editorconfig/editorconfig"
 
 if [[ -d "$EDITOR_CONFIG" ]], then
   ln -s "${EDITOR_CONFIG}" "${HOME}/.editorconfig"
 fi
 
-# Hushlogin
+# Hushlogin File.
 touch .hushlogin &&
 cat << EOF >> "${HOME}/.hushlogin"
 #
@@ -246,7 +246,7 @@ cat << EOF >> "${HOME}/.hushlogin"
 #
 EOF
 
-# User Config
+# User Configurations.
 if [[ ! -d "$DOTFILES/user" ]], then
   mkdir -p "${DOTFILES}/user" && touch .config &&
 cat << EOF >> "${DOTFILES}/user/.config"
@@ -266,19 +266,19 @@ fi
 # Sets macOS
 #
 
-# Personal Settings
+# Personal Settings.
 for packages (${UTILS_DIR}/opt/usr/*(N.)); do
   [[ -r "$packages" ]] && source "${packages}"
 done
 
-# Apple's System Fonts
+# Apple's System Fonts.
 # Ref: https://developer.apple.com/fonts/
 APPLE_FONTS="${UTILS_DIR}/opt/macOS/fonts"
 if [[ -e "$APPLE_FONTS" ]]; then
   source "${APPLE_FONTS}"
 fi
 
-# Ask before potentially overwriting files
+# Ask before potentially overwriting files.
 read -q "REPLY?macOS: update your macOS System Default.
 Before continuing, to make sure all changes will apply by going to:
 System Preferences > Security & Privacy and grant Full Disk Access to Terminal.
