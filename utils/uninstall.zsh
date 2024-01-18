@@ -5,7 +5,14 @@
 #
 
 # Source the initialization script to set up the environment.
-INIT_SCRIPT="${0:a:h}/lib/systemd/init"
+# Uses the current script's directory, detect the OS, then loads…
+# Define the script directories
+if [[ "$0" = /* ]]; then
+  ROOT_DIR=$(dirname "$0")
+else
+  ROOT_DIR=$(dirname "$PWD/$0")
+fi
+INIT_SCRIPT="${ROOT_DIR}/lib/systemd/init"
 
 if [[ -r "$INIT_SCRIPT" ]]; then
   source "${INIT_SCRIPT}"
@@ -34,7 +41,7 @@ for file in "$HOME/.{editorconfig,hushlogin,zshenv}"; do
 done
 
 for dir in "$XDG_CONFIG_HOME/{curl,git,nano,node,npm,tmux,zsh}" "$XDG_DATA_HOME/{nvm,zsh}"; do
-  [[ -d "$dir" ]] && rm -rf "${dir}" &&echo "Removed symlink configurations for: ${dir}"
+  [[ -d "$dir" ]] && rm -rf "${dir}" && echo "Removed symlink configurations for: ${dir}"
 done
 
 # Uninstall Launch Agent.
@@ -67,19 +74,19 @@ fi
 
 # Unload and remove Visual Studio Code configs.
 CODE="/Applications/Visual Studio\ Code.app"
-CODE_USER="$HOME/Library/Application Support/Code/User"
+CODE_USER="${HOME}/Library/Application Support/Code/User"
 
 if [[ -d "$CODE" ]]; then
   for config in "$CODE_USER"/{keybindings.json,settings.json}; do
     if [[ -f "$config" ]]; then
-      rm "$config" && echo "Removed Visual Studio Code config: $config"
+      rm "${config}" && echo "Removed Visual Studio Code config: ${config}"
     else
-      echo "Visual Studio Code config not found: $config"
+      echo "Visual Studio Code config not found: ${config}"
     fi
   done
 
   if [[ -d "$CODE_USER/configExtensions" ]]; then
-    rm -rf "$CODE_USER/configExtensions" && echo "Removed Visual Studio Code extension configs."
+    rm -rf "${CODE_USER}/configExtensions" && echo "Removed Visual Studio Code extension configs."
   fi
 fi
 

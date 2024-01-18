@@ -5,8 +5,13 @@
 #
 
 # Uses the current script's directory, detect the OS, then loads…
-DOTFILES="${${(%):-%x}:h}"
-INIT="$DOTFILES/lib/systemd/init"
+# Define the script directories
+if [[ "$0" = /* ]]; then
+    ROOT_DIR=$(dirname "$0")
+else
+    ROOT_DIR=$(dirname "$PWD/$0")
+fi
+INIT="${ROOT_DIR}/lib/systemd/init"
 [[ "$OSTYPE" = darwin* && -r "$INIT" ]] && source "$INIT" || exit 1
 
 #
@@ -116,7 +121,7 @@ if [[ -d "$LIB_DIR/ssh" ]]; then
   if [[ -e "${LIB_DIR}/ssh/known_hosts" ]]; then
     ln -s "${LIB_DIR}/ssh/known_hosts" "${XDG_DATA_HOME}/ssh"
   else
-    touch "$LIB_DIR/ssh/know_hosts" && \
+    touch "${LIB_DIR}/ssh/know_hosts" && \
     ln -s "${LIB_DIR}/ssh/known_hosts" "${XDG_DATA_HOME}/ssh"
   fi
 
@@ -134,7 +139,7 @@ CODE_EXTENSIONS="${UTILS_DIR}/opt/code/extensions"
 
 if [[ -e "$CODE" ]]; then
   # Open the App to create the default directories.
-  open "$CODE" && sleep 10 && osascript -e 'quit app "Visual Studio Code"'
+  open "${CODE}" && sleep 10 && osascript -e 'quit app "Visual Studio Code"'
 
   # User config
   for config in "${CODE_USER}"/{keybindings.json,settings.json}; do
