@@ -16,10 +16,10 @@ if [[ "$SHELL" != */zsh ]]; then
   exit 1
 fi
 
-# Path to iCloud Drive.
-SW_VERS=$(sw_vers --productVersion)
-OS_VERS=$(echo "$SW_VERS" | cut -d '.' -f 1)
-if [[ "$OS_VERS" -ge 10 ]]; then
+# Path to iCloud Drive (from OS X 10.12 Sierra or later).
+SW_VERS=$(sw_vers -buildVersion)
+OS_VERS=$(sed -E -e 's/([0-9]{2}).*/\1/' <<< "$SW_VERS")
+if [[ "$OS_VERS" -ge 16 ]]; then
   export CLOUD_DOCS="${HOME}/Library/Mobile Documents/com~apple~CloudDocs"
 fi
 

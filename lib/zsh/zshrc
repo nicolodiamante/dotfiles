@@ -10,7 +10,7 @@
 #
 
 # systemd
-CLOUD_DOCS=$HOME/Library/Mobile\ Documents/com\~apple\~CloudDocs
+CLOUD_DOCS=${HOME}/Library/Mobile\ Documents/com\~apple\~CloudDocs
 INIT=${CLOUD_DOCS:-$HOME}/dotfiles/lib/systemd/init
 [[ -r $INIT ]] && source ${INIT}
 
