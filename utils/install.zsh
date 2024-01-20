@@ -5,11 +5,11 @@
 #
 
 # Uses the current script's directory, detect the OS, then loads…
-# Define the script directories
+# Define the script directories.
 if [[ "$0" = /* ]]; then
-    ROOT_DIR=$(dirname "$0")
+  ROOT_DIR=$(dirname "$0")
 else
-    ROOT_DIR=$(dirname "$PWD/$0")
+  ROOT_DIR=$(dirname "$PWD/$0")
 fi
 INIT="${ROOT_DIR}/lib/systemd/init"
 [[ "$OSTYPE" = darwin* && -r "$INIT" ]] && source "$INIT" || exit 1
@@ -19,70 +19,81 @@ INIT="${ROOT_DIR}/lib/systemd/init"
 #
 
 # Check for Xcode command line tools, else install.
-echo 'Xcode: checking for command line tools...'
+echo "Xcode: Checking for command line tools..."
 if xcode-select -p 1>/dev/null; then
-  echo 'Xcode: command line tools installed!'
+  echo "Xcode: Command line tools installed."
 else
-  echo 'Xcode: command line tools are missing! Installing it...'
+  echo "Xcode: Command line tools are missing! Installing it..."
   xcode-select --install
 fi
 
 # Check for Homebrew, else install.
-echo 'Checking for Homebrew...'
+echo "\nHomebrew: Checking for Homebrew..."
 if [[ -z `command -v brew` ]]; then
-  echo 'Brew is missing! Installing it...'
+  echo "Homebrew is missing. Installing it..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
 # XDG Base Directory Specification.
-[[ ! -d "$XDG_CONFIG_HOME" ]] && mkdir -p "${XDG_CONFIG_HOME}"
-[[ ! -d "$XDG_DATA_HOME" ]] && mkdir -p "${XDG_DATA_HOME}"
-[[ ! -d "$XDG_STATE_HOME" ]] && mkdir -p "${XDG_STATE_HOME}"
-[[ ! -d "$XDG_CACHE_HOME" ]] && mkdir -p "${XDG_CACHE_HOME}"
+echo "\nXDG: Setting up XDG Base Directory Specification..."
+[[ ! -d "$XDG_CONFIG_HOME" ]] && mkdir -p "${XDG_CONFIG_HOME}" && \
+[[ ! -d "$XDG_DATA_HOME" ]] && mkdir -p "${XDG_DATA_HOME}" && \
+[[ ! -d "$XDG_STATE_HOME" ]] && mkdir -p "${XDG_STATE_HOME}" && \
+[[ ! -d "$XDG_CACHE_HOME" ]] && mkdir -p "${XDG_CACHE_HOME}" && \
+echo "XDG: XDG Base Directory Specification done..."
 
 #
 # Installing binaries and other packages.
 #
 
 # Homebrew Bundle
-echo 'Homebrew: installing binaries and other packages...'
+echo "\nHomebrew: installing binaries and other packages..."
 brew update && brew bundle --file=${UTILS_DIR}/opt/homebrew/Brewfile && brew cleanup
 
 #
 # Symlinks to the local config files.
 #
 
-echo 'Symlinking all configurations...'
+echo "\nSymlinking all configurations..."
 
 # Curl Configurations.
-[[ ! -d "$XDG_CONFIG_HOME/curl" ]] && mkdir -p "${XDG_CONFIG_HOME}/curl"
-ln -s "${LIB_DIR}/curl/curlrc" "${XDG_CONFIG_HOME}/curl/.curlrc"
+if [[ ! -d "$XDG_CONFIG_HOME/curl" ]]; then
+  echo "\nDotfiles: Symlinking curl configurations..."
+  mkdir -p "${XDG_CONFIG_HOME}/curl"
+  ln -s "${LIB_DIR}/curl/curlrc" "${XDG_CONFIG_HOME}/curl/.curlrc" && echo "Dotfiles: Symlink done..."
+fi
 
 # Nano Configurations.
-[[ ! -d "$XDG_CONFIG_HOME/nano" ]] && mkdir -p "${XDG_CONFIG_HOME}/nano"
-ln -s "${LIB_DIR}/nano/nanorc" "${XDG_CONFIG_HOME}/nano"
+if [[ ! -d "$XDG_CONFIG_HOME/nano" ]]; then
+  echo "Dotfiles: Symlinking nano configurations..."
+  mkdir -p "${XDG_CONFIG_HOME}/nano"
+  ln -s "${LIB_DIR}/nano/nanorc" "${XDG_CONFIG_HOME}/nano" && echo "Dotfiles: Symlink done..."
+fi
 
 # Zsh Configurations.
 if brew ls --versions zsh > /dev/null; then
+  echo "Dotfiles: Symlinking zsh configurations..."
   [[ ! -d "$XDG_STATE_HOME/zsh" ]] && mkdir -p "${XDG_STATE_HOME}/zsh"
   [[ ! -d "$XDG_CONFIG_HOME/zsh" ]] && mkdir -p "${XDG_CONFIG_HOME}/zsh"
   [[ ! -d "$XDG_CACHE_HOME/zsh" ]] && mkdir -p "${XDG_CACHE_HOME}/zsh"
 
-  ln -s "${LIB_DIR}/zsh/zshenv" "${HOME}/.zshenv"
-  ln -s "${LIB_DIR}/zsh/zlogin" "${XDG_CONFIG_HOME}/zsh/.zlogin"
-  ln -s "${LIB_DIR}/zsh/zlogout" "${XDG_CONFIG_HOME}/zsh/.zlogout"
-  ln -s "${LIB_DIR}/zsh/zprofile" "${XDG_CONFIG_HOME}/zsh/.zprofile"
-  ln -s "${LIB_DIR}/zsh/zshrc" "${XDG_CONFIG_HOME}/zsh/.zshrc"
+  ln -s "${LIB_DIR}/zsh/zshenv" "${HOME}/.zshenv" && \
+  ln -s "${LIB_DIR}/zsh/zlogin" "${XDG_CONFIG_HOME}/zsh/.zlogin" && \
+  ln -s "${LIB_DIR}/zsh/zlogout" "${XDG_CONFIG_HOME}/zsh/.zlogout" && \
+  ln -s "${LIB_DIR}/zsh/zprofile" "${XDG_CONFIG_HOME}/zsh/.zprofile" && \
+  ln -s "${LIB_DIR}/zsh/zshrc" "${XDG_CONFIG_HOME}/zsh/.zshrc" && echo "Dotfiles: Symlink done..."
 fi
 
 # Git Configurations.
 if brew ls --versions git > /dev/null; then
+  echo "Dotfiles: Symlinking git configurations..."
   [[ ! -d "$XDG_CONFIG_HOME/git" ]] && mkdir -p "${XDG_CONFIG_HOME}/git"
-  ln -s "${LIB_DIR}"/git/* "${XDG_CONFIG_HOME}/git"
+  ln -s "${LIB_DIR}"/git/* "${XDG_CONFIG_HOME}/git" && echo "Dotfiles: Symlink done..."
 fi
 
 # Node Configurations.
 if brew ls --versions node > /dev/null; then
+  echo "\nDotfiles: Checking for Node environment..."
   # nvm
   if brew ls --versions nvm > /dev/null; then
     [[ ! -d "$XDG_CONFIG_HOME/nvm" ]] && mkdir -p "${XDG_CONFIG_HOME}/nvm"
@@ -92,18 +103,22 @@ if brew ls --versions node > /dev/null; then
   [[ ! -d "$XDG_CONFIG_HOME/node" ]] && mkdir -p "${XDG_CONFIG_HOME}/node"
   [[ ! -d "$XDG_STATE_HOME/node" ]] && mkdir -p "${XDG_STATE_HOME}/node"
   [[ ! -d "$XDG_CONFIG_HOME/npm" ]] && mkdir -p "${XDG_CONFIG_HOME}/npm"
+  echo "Dotfiles: Created Node environment..."
 fi
 
 # Tmux Configurations.
 if brew ls --versions tmux > /dev/null; then
+  echo "\nDotfiles: Symlinking tmux configurations..."
   [[ ! -d "$XDG_CONFIG_HOME/tmux" ]] && mkdir -p "${XDG_CONFIG_HOME}/tmux"
-  ln -s "${LIB_DIR}/tmux/lib/tmux.conf" "${XDG_CONFIG_HOME}/tmux/tmux.conf"
+  ln -s "${LIB_DIR}/tmux/lib/tmux.conf" "${XDG_CONFIG_HOME}/tmux/tmux.conf" && \
+  echo "Dotfiles: Symlink done..."
 fi
 
 # SSH Configurations.
 # See: https://bit.ly/2VK3nlm
 # See: https://bit.ly/3lOMwIS
 if [[ -d "$LIB_DIR/ssh" ]]; then
+  echo "\nDotfiles: Checking for SSH configurations..."
   [[ ! -d "$XDG_CONFIG_HOME/ssh" ]] && mkdir -p "${XDG_CONFIG_HOME}/ssh"
   [[ ! -d "$XDG_CONFIG_HOME/ssh" ]] && mkdir -p "${XDG_CONFIG_HOME}/ssh/keys"
   [[ ! -d "$XDG_DATA_HOME/ssh" ]] && mkdir -p "${XDG_DATA_HOME}/ssh"
@@ -129,6 +144,7 @@ if [[ -d "$LIB_DIR/ssh" ]]; then
   # See: https://serverpilot.io/docs/how-to-use-ssh-public-key-authentication
   chmod 700 "${XDG_CONFIG_HOME}/ssh"
   chmod 644 "${XDG_DATA_HOME}/ssh/known_hosts"
+  echo "Dotfiles: Created SSH configurations..."
 fi
 
 # Visual Studio Code Config and Extensions.
@@ -138,6 +154,7 @@ CODE_CONFIG="${UTILS_DIR}/code"
 CODE_EXTENSIONS="${UTILS_DIR}/opt/code/extensions"
 
 if [[ -e "$CODE" ]]; then
+  echo "\nDotfiles: Checking for Visual Studio Code configurations..."
   # Open the App to create the default directories.
   open "${CODE}" && sleep 10 && osascript -e 'quit app "Visual Studio Code"'
 
@@ -160,6 +177,7 @@ if [[ -e "$CODE" ]]; then
   if [[ -e "$CODE_EXTENSIONS" ]]; then
     source "${UTILS_DIR}/opt/code/extensions"
   fi
+  echo "Dotfiles: Created Visual Studio Code configurations..."
 fi
 
 # Xcode Config and Theme.
@@ -167,6 +185,7 @@ XCODE=/Applications/Xcode.app
 XCODE_THEMES="${HOME}/Library/Developer/Xcode/UserData/FontAndColorThemes"
 
 if [[ -e "$XCODE" ]]; then
+  echo "\nDotfiles: Checking for Xcode configurations..."
   # Open the App to create the default directories.
   open "$XCODE" && sleep 10 && osascript -e 'quit app "Xcode"'
 
@@ -178,6 +197,7 @@ if [[ -e "$XCODE" ]]; then
       ln -s "${UTILS_DIR}/opt/code/Copycat.xccolortheme" "${XCODE_THEMES}"
     fi
   fi
+  echo "Dotfiles: Created Xcode configurations..."
 fi
 
 # Launch Agents Configuration.
@@ -189,6 +209,7 @@ AGENTS_DIR="${HOME}/.scripts"
 USER_HOME_PATH=$(eval echo ~$USER)
 
 if [[ -d "$LAUNCHD_DIR" ]]; then
+  echo "\nDotfiles: Checking for Launch Agent configurations..."
   # Check for directories, else create them.
   [[ ! -d "$LAUNCHD_LIB" ]] && mkdir -p "${LAUNCHD_LIB}"
   [[ ! -d "$AGENTS_DIR" ]] && mkdir -p "${AGENTS_DIR}"
@@ -220,16 +241,17 @@ if [[ ! -f "$AGENT_TARGET" ]]; then
 EOF
 fi
 
+  echo "Dotfiles: Symlinking Launch Agent configurations..."
   # Symlink Agent and copy script.
   ln -s "${AGENT_TARGET}" "${LAUNCHD_LIB}" && \
   cp "${AGENT_SCRIPT}" "${AGENTS_DIR}"
 
   # Load the agent.
-  echo "Loading the agent..."
+  echo "Dotfiles: Loading the Agent..."
   if ! launchctl load "${AGENT_TARGET}"; then
-    echo "Failed to load the agent." >&2
+    echo "Dotfiles: Failed to load the Agent." >&2
   else
-    echo "Agent loaded successfully."
+    echo "Dotfiles: Agent loaded successfully."
   fi
 fi
 
@@ -237,11 +259,14 @@ fi
 EDITOR_CONFIG="${UTILS_DIR}/opt/editorconfig/editorconfig"
 
 if [[ -d "$EDITOR_CONFIG" ]], then
+  echo "\nDotfiles: Symlinking editorconfig at: ${HOME}/.editorconfig"
   ln -s "${EDITOR_CONFIG}" "${HOME}/.editorconfig"
 fi
 
 # Hushlogin File.
-touch .hushlogin &&
+if [[ ! -d "${HOME}/.hushlogin" ]], then
+  echo "\nDotfiles: Creating hushlogin config at: ${HOME}/.hushlogin"
+  touch .hushlogin &&
 cat << EOF >> "${HOME}/.hushlogin"
 #
 # The mere presence of this file in the home directory disables the
@@ -250,9 +275,11 @@ cat << EOF >> "${HOME}/.hushlogin"
 # appear on login. See 'man login'.
 #
 EOF
+fi
 
 # User Configurations.
 if [[ ! -d "$DOTFILES/user" ]], then
+  echo "\nDotfiles: Creating user configurations config at: ${DOTFILES}/user"
   mkdir -p "${DOTFILES}/user" && touch .config &&
 cat << EOF >> "${DOTFILES}/user/.config"
 #
@@ -272,37 +299,47 @@ fi
 #
 
 # Personal Settings.
-for packages (${UTILS_DIR}/opt/usr/*(N.)); do
-  [[ -r "$packages" ]] && source "${packages}"
-done
+USR_DIR=${UTILS_DIR}/opt/usr
 
-# Apple's System Fonts.
+if [[ -d "$DOTFILES/user" ]], then
+  echo "\nmacOS: Loading User configurations..."
+  for packages ($USR_DIR/*(N.)); do
+    [[ -r "$packages" ]] && source "${packages}"
+  done
+fi
+
+# Apple's Developer Fonts.
 # Ref: https://developer.apple.com/fonts/
 APPLE_FONTS="${UTILS_DIR}/opt/macOS/fonts"
+
 if [[ -e "$APPLE_FONTS" ]]; then
+  echo "\nmacOS: Checking Apple's Developer Fonts..."
   source "${APPLE_FONTS}"
 fi
 
 # Ask before potentially overwriting files.
-read -q "REPLY?macOS: update your macOS System Default.
-Before continuing, to make sure all changes will apply by going to:
-System Preferences > Security & Privacy and grant Full Disk Access to Terminal.
-Shall we proceed? (y/n) " -n 1;
+echo "\nmacOS: Update your macOS System Default."
+echo "Before continuing, to make sure all changes will apply by going to:"
+echo "System Preferences > Privacy & Security > Full Disk Access > [x] Terminal."
+read -q "REPLY?Shall we proceed? (y/n) " -n 1;
 echo "";
 if [[ $REPLY =~ ^[Yy]$ ]]; then
+  echo "macOS: Updating settings..."
  source "${UTILS_DIR}/opt/macOS/sysprefs"
 else
-  echo 'macOS: settings update skipped!'
+  echo "macOS: Settings update skipped."
 fi
 
 #
 # Reboot macOS
 #
 
-read -q "REPLY?macOS: Done! Some of these changes require to reboot the system to take effect. Proceed? (y/n) " -n 1;
+# Prints a success message.
+echo "\nmacOS: Setup dotfiles complete."
+read -q "REPLY?macOS: Some of these changes require to reboot the system to take effect. Proceed? (y/n) " -n 1;
 echo "";
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   osascript -e 'tell app "loginwindow" to «event aevtrrst»'
 else
-  echo 'macOS: reboot OS aborted!'
+  echo "macOS: Reboot macOS aborted."
 fi

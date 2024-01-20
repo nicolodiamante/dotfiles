@@ -6,7 +6,7 @@
 
 # Source the initialization script to set up the environment.
 # Uses the current script's directory, detect the OS, then loads…
-# Define the script directories
+# Define the script directories.
 if [[ "$0" = /* ]]; then
   ROOT_DIR=$(dirname "$0")
 else
@@ -17,7 +17,7 @@ INIT_SCRIPT="${ROOT_DIR}/lib/systemd/init"
 if [[ -r "$INIT_SCRIPT" ]]; then
   source "${INIT_SCRIPT}"
 else
-  echo "Error: Initialization script ${INIT_SCRIPT} not found to set up the environment." >&2
+  echo "Dotfiles: Initialization script ${INIT_SCRIPT} not found to set up the environment." >&2
   exit 1
 fi
 
@@ -25,7 +25,7 @@ fi
 read -q "REPLY?This will uninstall the dotfiles and remove related configurations. Are you sure you want to proceed? [y/N] "
 echo ""
 if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
-  echo "Uninstallation aborted by the user."
+  echo "Dotfiles: Uninstall aborted by the user."
   exit 0
 fi
 
@@ -33,15 +33,25 @@ fi
 # Uninstall
 #
 
-echo "Start removing Dotfiles..."
+echo "\nDotfiles: Start removing Dotfiles..."
 
 # Remove Configurations.
+echo "\nDotfiles: Removing configurations for editorconfig, hushlogin, and zshenv at ${HOME}"
 for file in "$HOME/.{editorconfig,hushlogin,zshenv}"; do
-  [[ -f "$file" ]] && rm "${file}" && echo "Removed file: ${file}"
+  if [[ -f "$file" ]]; then
+    rm "${file}" && echo "Removed file: ${file}"
+  else
+    echo "File not found, skipping: ${file}"
+  fi
 done
 
+echo "\nDotfiles: Removing configurations for curl, git, nano, node, npm, tmux, and zsh at ${XDG_CONFIG_HOME}"
 for dir in "$XDG_CONFIG_HOME/{curl,git,nano,node,npm,tmux,zsh}" "$XDG_DATA_HOME/{nvm,zsh}"; do
-  [[ -d "$dir" ]] && rm -rf "${dir}" && echo "Removed symlink configurations for: ${dir}"
+  if [[ -d "$dir" ]]; then
+    rm -rf "${dir}" && echo "Removed symlink configurations for: ${dir}"
+  else
+    echo "Directory not found, skipping: ${dir}"
+  fi
 done
 
 # Uninstall Launch Agent.
@@ -52,42 +62,43 @@ AGENT_SCRIPT="${AGENTS_DIR}/updates.zsh"
 
 # Unload the agent.
 if [[ -f "$AGENT_TARGET" ]]; then
-  echo "Unloading the agent..."
-  if ! launchctl unload "${AGENT_TARGET}"; then
-    echo "Failed to unload the agent." >&2
+  echo "\nDotfiles: Unloading the Agent Updates..."
+  if launchctl unload "${AGENT_TARGET}"; then
+    echo "Dotfiles: Agent unloaded successfully."
+    rm "${AGENT_TARGET}" && echo "Removed Agent plist: ${AGENT_TARGET}"
   else
-    echo "Agent unloaded successfully."
-    # Remove the symlink
-    rm "${AGENT_TARGET}"
+    echo "Dotfiles: Failed to unload the agent Updates." >&2
   fi
 else
-  echo "Agent not found or already unloaded."
+  echo "Dotfiles: Agent Updates not found or already unloaded."
 fi
 
 # Remove the script.
 if [[ -f "$AGENT_SCRIPT" ]]; then
-  rm "${AGENT_SCRIPT}"
-  echo "Agent script removed."
+  rm "${AGENT_SCRIPT}" && echo "Dotfiles: Agent Updates script removed at ${AGENTS_DIR}"
 else
-  echo "Agent script not found or already removed."
+  echo "Dotfiles: Agent Updates script not found or already removed at ${AGENTS_DIR}"
 fi
 
 # Unload and remove Visual Studio Code configs.
-CODE="/Applications/Visual Studio\ Code.app"
+CODE="/Applications/Visual Studio Code.app"
 CODE_USER="${HOME}/Library/Application Support/Code/User"
 
 if [[ -d "$CODE" ]]; then
+  echo "\nDotfiles: Removing Visual Studio Code configurations..."
   for config in "$CODE_USER"/{keybindings.json,settings.json}; do
     if [[ -f "$config" ]]; then
       rm "${config}" && echo "Removed Visual Studio Code config: ${config}"
     else
-      echo "Visual Studio Code config not found: ${config}"
+      echo "Visual Studio Code config not found, skipping: ${config}"
     fi
   done
 
   if [[ -d "$CODE_USER/configExtensions" ]]; then
     rm -rf "${CODE_USER}/configExtensions" && echo "Removed Visual Studio Code extension configs."
   fi
+  echo "Dotfiles: Visual Studio Code configurations removed."
 fi
 
-echo "Dotfiles uninstalled successfully!"
+# Prints a success message.
+echo "\nmacOS: Dotfiles uninstall complete."
