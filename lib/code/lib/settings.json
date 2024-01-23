@@ -148,6 +148,12 @@
   "gitlens.codeLens.authors.enabled": false,
   "gitlens.currentLine.enabled": false,
 
+  // Codeium
+  "codeium.enableConfig": {
+    "*": true,
+    "markdown": true
+  },
+
   // Integrated Terminal colors
   "workbench.colorCustomizations": {
     "sideBar.background": "#0d1117",
@@ -155,11 +161,5 @@
     "editorRuler.foreground": "#30363d",
     "terminal.background": "#0d1117",
     "panel.background": "#0d1117"
-  },
-
-  // Codeium
-  "codeium.enableConfig": {
-    "*": true,
-    "markdown": true
   }
 }

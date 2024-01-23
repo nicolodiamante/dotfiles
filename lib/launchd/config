@@ -14,6 +14,8 @@ launch() {
     echo
     echo "Options:"
     echo "  -d, --dir       Navigate to the user's agents directory"
+    echo "  -o, --open      Open the LaunchAgents directory"
+    echo
     echo "  -l, --list      List all running launchctl daemons/agents"
     echo "  -g, --grep      Filter the list of launchctl daemons/agents"
     echo
@@ -34,6 +36,8 @@ launch() {
   # Launchd Services
   if [[ "$COMMAND" == "-d" || "$COMMAND" == "--dir" ]]; then
     cd "${LIB_AGENTS}" || return
+  elif [[ "$COMMAND" == "-o" || "$COMMAND" == "--open" ]]; then
+    cd "${LIB_AGENTS}" && open . || return
   elif [[ "$COMMAND" == "-l" || "$COMMAND" == "--list" ]]; then
     launchctl list
   elif [[ "$COMMAND" == "-g" || "$COMMAND" == "--grep" && -n "$AGENT" ]]; then

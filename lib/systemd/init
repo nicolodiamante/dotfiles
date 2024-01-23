@@ -33,7 +33,7 @@ export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_CACHE_HOME="${HOME}/.cache"
 
 # macOS Sonoma or later
-if [[ "$OS_VERS" -ge 14 ]]; then
+if [[ "$OS_VERS" -ge 23 ]]; then
   export XDG_DATA_HOME="${HOME}/.local:share"
   export XDG_STATE_HOME="${HOME}/.local:state"
 else
