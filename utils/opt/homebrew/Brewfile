@@ -42,7 +42,9 @@ cask "visual-studio-code"
 # 'mas install'
 #
 
-mas "Data Jar", id:1453273600
+mas "AdGuard for Safari", id: 1440147259
+mas "Data Jar", id: 1453273600
+mas "Grammarly for Safari", id: 1462114288
 mas "Magnet", id: 441258766
 mas "The Unarchiver", id: 425424353
 #mas "Xcode", id: 497799835

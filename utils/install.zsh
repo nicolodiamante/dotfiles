@@ -200,61 +200,6 @@ if [[ -e "$XCODE" ]]; then
   echo "Dotfiles: Created Xcode configurations..."
 fi
 
-# Launch Agents Configuration.
-LAUNCHD_DIR="${LIB_DIR}/launchd"
-LAUNCHD_LIB="${HOME}/Library/LaunchAgents"
-AGENT_TARGET="${LAUNCHD_DIR}/updates/com.shell.Updates.plist"
-AGENT_SCRIPT="${LAUNCHD_DIR}/updates/script/updates.zsh"
-AGENTS_DIR="${HOME}/.scripts"
-USER_HOME_PATH=$(eval echo ~$USER)
-
-if [[ -d "$LAUNCHD_DIR" ]]; then
-  echo "\nDotfiles: Checking for Launch Agent configurations..."
-  # Check for directories, else create them.
-  [[ ! -d "$LAUNCHD_LIB" ]] && mkdir -p "${LAUNCHD_LIB}"
-  [[ ! -d "$AGENTS_DIR" ]] && mkdir -p "${AGENTS_DIR}"
-
-if [[ ! -f "$AGENT_TARGET" ]]; then
-  # Create and write to plist file.
-  touch "${AGENT_TARGET}"
-  cat > "${AGENT_TARGET}" <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-  <dict>
-    <key>Label</key>
-    <string>com.shell.Updates</string>
-    <key>ProgramArguments</key>
-    <array>
-      <string>${USER_HOME_PATH}/.scripts/updates.zsh</string>
-      <string>-mode=scheduled</string>
-    </array>
-    <key>StartCalendarInterval</key>
-    <dict>
-      <key>Minute</key>
-      <integer>30</integer>
-      <key>Hour</key>
-      <integer>15</integer>
-    </dict>
-  </dict>
-</plist>
-EOF
-fi
-
-  echo "Dotfiles: Symlinking Launch Agent configurations..."
-  # Symlink Agent and copy script.
-  ln -s "${AGENT_TARGET}" "${LAUNCHD_LIB}" && \
-  cp "${AGENT_SCRIPT}" "${AGENTS_DIR}"
-
-  # Load the agent.
-  echo "Dotfiles: Loading the Agent..."
-  if ! launchctl load "${AGENT_TARGET}"; then
-    echo "Dotfiles: Failed to load the Agent." >&2
-  else
-    echo "Dotfiles: Agent loaded successfully."
-  fi
-fi
-
 # EditorConfig.
 EDITOR_CONFIG="${UTILS_DIR}/opt/editorconfig/editorconfig"
 

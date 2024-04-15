@@ -54,32 +54,6 @@ for dir in "$XDG_CONFIG_HOME/{curl,git,nano,node,npm,tmux,zsh}" "$XDG_DATA_HOME/
   fi
 done
 
-# Uninstall Launch Agent.
-LAUNCHD_LIB="${HOME}/Library/LaunchAgents"
-AGENT_TARGET="${LAUNCHD_LIB}/updates/com.shell.Updates.plist"
-AGENTS_DIR="${HOME}/.scripts"
-AGENT_SCRIPT="${AGENTS_DIR}/updates.zsh"
-
-# Unload the agent.
-if [[ -f "$AGENT_TARGET" ]]; then
-  echo "\nDotfiles: Unloading the Agent Updates..."
-  if launchctl unload "${AGENT_TARGET}"; then
-    echo "Dotfiles: Agent unloaded successfully."
-    rm "${AGENT_TARGET}" && echo "Removed Agent plist: ${AGENT_TARGET}"
-  else
-    echo "Dotfiles: Failed to unload the agent Updates." >&2
-  fi
-else
-  echo "Dotfiles: Agent Updates not found or already unloaded."
-fi
-
-# Remove the script.
-if [[ -f "$AGENT_SCRIPT" ]]; then
-  rm "${AGENT_SCRIPT}" && echo "Dotfiles: Agent Updates script removed at ${AGENTS_DIR}"
-else
-  echo "Dotfiles: Agent Updates script not found or already removed at ${AGENTS_DIR}"
-fi
-
 # Unload and remove Visual Studio Code configs.
 CODE="/Applications/Visual Studio Code.app"
 CODE_USER="${HOME}/Library/Application Support/Code/User"
