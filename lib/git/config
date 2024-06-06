@@ -51,6 +51,9 @@
   # Push local repository online
   po = push -u origin main
 
+  # Force push local repository online
+  pof = push -u -f origin main
+
   # Git Revert Last Commit (preserve changes)
   r = "!f() { git reset --soft HEAD~\"$1\"; }; f"
 

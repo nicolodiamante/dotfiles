@@ -32,6 +32,7 @@ brew "zsh-completions"
 #
 
 cask "adobe-creative-cloud"
+cask "chatgpt"
 cask "discord"
 cask "figma"
 cask "google-chrome"
@@ -47,4 +48,4 @@ mas "Magnet", id: 441258766
 mas "Numbers", id: 409203825
 mas "Keynote", id: 409183694
 mas "Pages", id: 409201541
-#mas "Xcode", id: 497799835
+mas "Xcode", id: 497799835

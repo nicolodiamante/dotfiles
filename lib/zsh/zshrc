@@ -24,9 +24,9 @@ done
 
 # As you add more functions, it becomes cumbersome to append each
 # of them to the end, so automatically loads all the files into
-# the functions folder.
-if [[ -d "$LIB_DIR/zsh/functions" ]]; then
-  fpath=(${LIB_DIR}/zsh/functions "${fpath[@]}")
+# the bin folder.
+if [[ -d "$LIB_DIR/zsh/bin" ]]; then
+  fpath=(${LIB_DIR}/zsh/bin "${fpath[@]}")
   autoload -Uz $fpath[1]/*(N.:t)
 fi
 
@@ -36,6 +36,17 @@ fi
 for usr_files ($USER_DIR/**/^(*.scpt|ssc)(N.||@:t)); do
   [[ -r "$usr_files" ]] && source "${usr_files}"
 done
+
+# Check if the shell is interactive and the script
+# is being executed interactively
+if [[ $- == *i* ]] && [[ -z "$ZSH_EVAL_CONTEXT" ]]; then
+  # Load all the user configurations.
+  # Iterate over all the files in the current directory
+  # and its (grand-)*children except all the .scpt and ssc.
+  for usr_files ($USER_DIR/**/^(*.scpt|ssc)(N.||@:t)); do
+    [[ -r "$usr_files" ]] && source "${usr_files}"
+  done
+fi
 
 # Load each configuration files.
 for config_files in $LIB_DIR/^(git|ssh)/config; do
