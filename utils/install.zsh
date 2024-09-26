@@ -189,12 +189,14 @@ if [[ -e "$XCODE" ]]; then
   # Open the App to create the default directories.
   open "$XCODE" && sleep 10 && osascript -e 'quit app "Xcode"'
 
-  if [[ -d "$UTILS_DIR/opt/xcode" ]]; then
+  if [[ -d "$UTILS_DIR/opt/Xcode" ]]; then
     if [[ ! -d "$XCODE_THEMES" ]]; then
       mkdir -p "${XCODE_THEMES}" && \
-      ln -s "${UTILS_DIR}/opt/code/Copycat.xccolortheme" "${XCODE_THEMES}"
+      ln -s "${UTILS_DIR}/opt/Xcode/GitHub (Dark).xccolortheme" "${XCODE_THEMES}"
+      ln -s "${UTILS_DIR}/opt/Xcode/GitHub (Light).xccolortheme" "${XCODE_THEMES}"
     else
-      ln -s "${UTILS_DIR}/opt/code/Copycat.xccolortheme" "${XCODE_THEMES}"
+      ln -s "${UTILS_DIR}/opt/Xcode/GitHub (Dark).xccolortheme" "${XCODE_THEMES}"
+      ln -s "${UTILS_DIR}/opt/Xcode/GitHub (Light).xccolortheme" "${XCODE_THEMES}"
     fi
   fi
   echo "Dotfiles: Created Xcode configurations..."
